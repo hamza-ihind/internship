@@ -1,0 +1,251 @@
+// Prisma schema for Moroccan Internship Platform
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum InternshipStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String?
+  email          String   @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String?  // Added for local authentication
+  role           Role     @default(USER)
+  plan           Plan     @default(FREE)
+  accounts       Account[]
+  profile        Profile?
+  applications   Application[]
+  payments       Payment[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Profile {
+  id         String  @id @default(cuid())
+  userId     String  @unique
+  phone      String?
+  university String?
+  faculty    String?
+  degree     String?
+  level      String?
+  skills     String[]
+  cvUrl      String?
+  passwordHash String?
+  
+  // Contact Information
+  city       String?
+  country    String?
+  dateOfBirth DateTime?
+  photoUrl   String?
+  
+  // Academic Information
+  graduationYear Int?
+  gpa          Float?
+  transcriptUrl String?
+  
+  // Languages & Skills
+  languages    String[]
+  
+  // Professional Links
+  linkedinUrl  String?
+  githubUrl    String?
+  portfolioUrl  String?
+  websiteUrl   String?
+  
+  // Preferences & Availability
+  preferredLocations String[]
+  workMode          String? // REMOTE, HYBRID, ON_SITE
+  earliestStartDate DateTime?
+  weeklyAvailabilityHours Int?
+  
+  // Compliance & Settings
+  termsAcceptedAt DateTime?
+  profilePublic    Boolean @default(false)
+  marketingConsent Boolean @default(false)
+  
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiences Experience[]
+  projects    Project[]
+  certifications Certification[]
+  languageProficiencies LanguageProficiency[]
+}
+
+model Internship {
+  id           String            @id @default(cuid())
+  title        String
+  company      String
+  location     String
+  mode         String
+  description  String
+  requirements String?
+  stipend      Int?
+  tags         String[]
+  openings     Int               @default(1)
+  postedById   String?
+  // postedBy     User?             @relation(fields: [postedById], references: [id], onDelete: SetNull)
+  status       InternshipStatus  @default(ACTIVE)
+  startsAt     DateTime?
+  endsAt       DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  
+  // Screening & Requirements
+  screeningQuestions Json?      // Lightweight Q&A forms for applicants
+  
+  applications Application[]
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  userId       String
+  internshipId String
+  coverLetter  String?
+  cvUrl        String?
+  status       ApplicationStatus @default(PENDING)
+  submittedAt  DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  
+  // Enhanced Application Fields
+  answers      Json?             // Screening questions/short answers
+  source       String?           // Application source (web, referral, etc.)
+  priority     Int?              // Priority ranking for admin sorting
+  withdrawnAt  DateTime?         // When application was withdrawn
+  
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  internship   Internship        @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, internshipId])
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+  stripeId  String   @unique
+  amount    Int
+  currency  String   @default("MAD")
+  status    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Supporting Models for Comprehensive User Profiles
+
+model Experience {
+  id          String   @id @default(cuid())
+  userId      String
+  company     String
+  title       String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+  isCurrent   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  profile     Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  techTags    String[]
+  linkUrl     String?
+  startDate   DateTime?
+  endDate     DateTime?
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  profile     Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model Certification {
+  id            String   @id @default(cuid())
+  userId        String
+  name          String
+  issuer        String
+  issuedAt      DateTime
+  credentialUrl String?
+  expiresAt     DateTime?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  profile       Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model LanguageProficiency {
+  id       String   @id @default(cuid())
+  userId   String
+  language String
+  level    LanguageLevel @default(INTERMEDIATE)
+  isNative Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  profile  Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+enum LanguageLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+  NATIVE
+}
