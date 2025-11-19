@@ -34,8 +34,8 @@ export default function ConnexionPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<FormData>({ 
+    resolver: zodResolver(loginSchema) 
   });
 
   const onSubmit = async (data: FormData) => {
@@ -144,11 +144,7 @@ export default function ConnexionPage() {
                 </Alert>
               )}
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
+              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                 ) : (

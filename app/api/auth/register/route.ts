@@ -1,68 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-import { registerSchema } from '@/schemas/auth';
+import { z } from 'zod';
+
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(1),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { email, password, name } = registerSchema.parse(body);
 
-    // Validate input data
-    const validationResult = registerSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: 'Validation failed',
-          details: validationResult.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      );
-    }
-
-    const { name, email, password } = validationResult.data;
-
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User already exists with this email' },
-        { status: 409 }
+        { error: 'Un utilisateur avec cet email existe déjà' },
+        { status: 400 }
       );
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
-        name,
         email,
-        password: hashedPassword, // This now maps to the password field in User model
+        name,
+        password: hashedPassword,
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-      }
     });
 
-    return NextResponse.json(
-      {
-        message: 'User created successfully',
-        user,
+    return NextResponse.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
       },
-      { status: 201 }
-    );
+    });
   } catch (error) {
-    console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Erreur lors de la création du compte' },
       { status: 500 }
     );
   }

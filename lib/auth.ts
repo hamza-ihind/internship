@@ -1,59 +1,99 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
-import { compare } from "bcrypt";
-import { z } from "zod";
-
-const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { prisma } from './prisma';
+import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
   providers: [
-    Credentials({
-      name: "Credentials",
+    CredentialsProvider({
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Mot de passe', type: 'password' },
       },
       async authorize(credentials) {
-        const parsed = credentialsSchema.safeParse(credentials);
-        if (!parsed.success) return null;
-        const { email, password } = parsed.data;
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
-        // In a real app, store hashed passwords; for now assume a demo flow
-        // Compare against a hashed password stored in a separate table/field if present
-        const profile = await prisma.profile.findUnique({ where: { userId: user.id } });
-        const hasPassword = (profile as any)?.passwordHash as string | undefined;
-        if (!hasPassword) return { id: user.id, email: user.email, name: user.name, role: user.role, plan: user.plan } as any;
-        const ok = await compare(password, hasPassword);
-        if (!ok) return null;
-        return { id: user.id, email: user.email, name: user.name, role: user.role, plan: user.plan } as any;
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        if (!user || !user.password) {
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          role: user.role,
+        };
       },
     }),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    }),
   ],
+  session: {
+    strategy: 'jwt',
+  },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.role = (user as any).role ?? "USER";
-        token.plan = (user as any).plan ?? "FREE";
+        token.role = user.role;
+        token.image = user.image;
       }
+
+      // Handle session update (when user updates profile)
+      if (trigger === 'update' && session) {
+        if (session.image !== undefined) {
+          token.image = session.image;
+        }
+        if (session.name !== undefined) {
+          token.name = session.name;
+        }
+        if (session.email !== undefined) {
+          token.email = session.email;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
-      (session.user as any).role = (token as any).role;
-      (session.user as any).plan = (token as any).plan;
+      if (token) {
+        session.user.id = token.sub!;
+        session.user.role = token.role as string;
+        session.user.image = token.image as string | null;
+
+        // Fetch fresh user data from database to ensure we have the latest image
+        const user = await prisma.user.findUnique({
+          where: { id: token.sub! },
+          select: { image: true, name: true, email: true },
+        });
+
+        if (user) {
+          session.user.image = user.image;
+          session.user.name = user.name;
+          session.user.email = user.email;
+        }
+      }
       return session;
     },
+  },
+  pages: {
+    signIn: '/auth/login',
+    signOut: '/auth/logout',
   },
 };

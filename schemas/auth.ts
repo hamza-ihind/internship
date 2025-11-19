@@ -2,11 +2,14 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z.string()
-    .email({ message: "Veuillez entrer une adresse email valide" })
-    .max(100, { message: "L'email doit contenir moins de 100 caractères" }),
+    .email({ message: "Please enter a valid email address" })
+    .max(100, { message: "Email must be less than 100 characters" })
+    .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, { 
+      message: "Please enter a valid email format" 
+    }),
   password: z.string()
-    .min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" })
-    .max(100, { message: "Le mot de passe doit contenir moins de 100 caractères" }),
+    .min(1, { message: "Password is required" })
+    .max(100, { message: "Password must be less than 100 characters" }),
 });
 
 export const registerSchema = z.object({
@@ -16,12 +19,15 @@ export const registerSchema = z.object({
     .regex(/^[a-zA-Z\s]+$/, { message: "Name can only contain letters and spaces" }),
   email: z.string()
     .email({ message: "Please enter a valid email address" })
-    .max(100, { message: "Email must be less than 100 characters" }),
+    .max(100, { message: "Email must be less than 100 characters" })
+    .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, { 
+      message: "Please enter a valid email format" 
+    }),
   password: z.string()
     .min(8, { message: "Password must be at least 8 characters" })
     .max(100, { message: "Password must be less than 100 characters" })
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, { 
-      message: "Password must contain at least one uppercase letter, one lowercase letter, and one number" 
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, { 
+      message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character" 
     }),
   confirmPassword: z.string()
     .min(8, { message: "Please confirm your password" }),

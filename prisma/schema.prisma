@@ -40,10 +40,12 @@ model User {
   password       String?  // Added for local authentication
   role           Role     @default(USER)
   plan           Plan     @default(FREE)
+  isBlocked      Boolean  @default(false)  // Account blocking functionality
   accounts       Account[]
   profile        Profile?
   applications   Application[]
   payments       Payment[]
+  loginAttempts  LoginAttempt[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -248,4 +250,28 @@ enum LanguageLevel {
   INTERMEDIATE
   ADVANCED
   NATIVE
+}
+
+model LoginAttempt {
+  id         String   @id @default(cuid())
+  email      String
+  success    Boolean
+  ipAddress  String
+  userAgent  String
+  timestamp  DateTime @default(now())
+  user       User?    @relation(fields: [email], references: [email], onDelete: Cascade)
+  
+  @@index([email, timestamp])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  email      String
+  token      String   @unique
+  expires    DateTime
+  used       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  
+  @@index([email, token])
+  @@index([expires])
 }

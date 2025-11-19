@@ -1,23 +1,17 @@
-'use client';
+'use client'
 
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { UserPlus, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { frenchRegisterSchema } from '@/schemas/auth';
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { UserPlus, User, Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { frenchRegisterSchema } from '@/schemas/auth'
 import {
   Form,
   FormControl,
@@ -25,22 +19,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '@/components/ui/form'
 
 type FormData = z.infer<typeof frenchRegisterSchema>;
 
 export default function InscriptionPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [error, setError] = useState('')
+  const router = useRouter()
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(frenchRegisterSchema),
-  });
+  const form = useForm<FormData>({ 
+    resolver: zodResolver(frenchRegisterSchema) 
+  })
 
   const onSubmit = async (data: FormData) => {
-    setError('');
+    setError('')
 
     try {
       const response = await fetch('/api/auth/register', {
@@ -53,38 +47,34 @@ export default function InscriptionPage() {
           email: data.email,
           password: data.password,
         }),
-      });
+      })
 
       if (response.ok) {
-        router.push('/auth/connexion?message=Compte créé avec succès');
+        router.push('/auth/connexion?message=Compte créé avec succès')
       } else {
-        const result = await response.json();
-
+        const result = await response.json()
+        
         if (response.status === 400 && result.details) {
           // Zod validation errors will be shown in the form
           return;
         }
-
+        
         if (response.status === 409) {
-          setError(
-            'Un compte avec cet email existe déjà. Veuillez vous connecter ou utiliser un email différent.'
-          );
+          setError('Un compte avec cet email existe déjà. Veuillez vous connecter ou utiliser un email différent.')
         } else {
-          setError(result.error || 'Une erreur est survenue');
+          setError(result.error || 'Une erreur est survenue')
         }
       }
     } catch (error) {
-      setError('Une erreur est survenue');
+      setError('Une erreur est survenue')
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-primary">
-            ENCG Agadir
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">ENCG Agadir</CardTitle>
           <CardDescription>
             Créez votre compte pour accéder à la plateforme
           </CardDescription>
@@ -139,7 +129,7 @@ export default function InscriptionPage() {
                   </FormItem>
                 )}
               />
-
+              
               <FormField
                 control={form.control}
                 name="password"
@@ -195,9 +185,7 @@ export default function InscriptionPage() {
                         <button
                           type="button"
                           className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-purple-600 transition-colors"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
                           {showConfirmPassword ? (
                             <EyeOff className="h-4 w-4 text-gray-400" />
@@ -247,5 +235,5 @@ export default function InscriptionPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

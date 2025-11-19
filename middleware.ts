@@ -1,16 +1,26 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { withAuth } from 'next-auth/middleware';
 
-export function middleware(req: NextRequest) {
-  const url = new URL(req.url);
-  // Basic guard for admin path; detailed auth happens server-side
-  if (url.pathname.startsWith("/admin")) {
-    // Redirect unauthenticated users to login; a real check would read session via NextAuth's middleware helper
-    return NextResponse.next();
+export default withAuth(
+  function middleware(req) {
+    // Add any middleware logic here if needed
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
+
+        // Allow access to auth pages
+        if (pathname.startsWith('/auth')) {
+          return true;
+        }
+
+        // Require authentication for all other pages
+        return !!token;
+      },
+    },
   }
-  return NextResponse.next();
-}
+);
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

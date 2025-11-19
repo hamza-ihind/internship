@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
-import '../login/login.css';
+import { toast } from 'sonner';
 import {
   Form,
   FormControl,
@@ -17,6 +17,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type FormData = z.infer<typeof registerSchema>;
 
@@ -25,8 +27,8 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
 
-  const form = useForm<FormData>({ 
-    resolver: zodResolver(registerSchema) 
+  const form = useForm<FormData>({
+    resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = async (data: FormData) => {
@@ -42,30 +44,38 @@ export default function RegisterPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        // Handle validation errors
-        if (response.status === 400 && result.details) {
-          // Zod validation errors will be shown in the form
-          return;
-        }
-
-        // Handle other errors (user exists, server errors)
-        if (response.status === 409) {
-          alert(
-            'An account with this email already exists. Please sign in or use a different email.'
+        // Handle specific error cases
+        if (response.status === 400) {
+          if (result.error === 'Email invalid') {
+            toast.error('Email invalid. Please enter a valid email address.');
+          } else if (result.error === 'Weak password') {
+            toast.error(
+              'Weak password. Password must contain uppercase, lowercase, number, and special character.'
+            );
+          } else if (result.error === 'Missing fields') {
+            toast.error('Missing fields. Please fill in all required fields.');
+          } else if (result.details) {
+            // Zod validation errors will be shown in the form
+            toast.error('Please fix the validation errors in the form');
+          }
+        } else if (response.status === 409) {
+          toast.error(
+            'Email already exists. Please sign in or use a different email.'
           );
         } else {
-          alert('Registration failed. Please try again.');
+          toast.error('Registration failed. Please try again.');
         }
         return;
       }
 
-      // Success - redirect to login or show success message
-      alert('Account created successfully! Please sign in to continue.');
-      window.location.href = '/login';
-      
+      // Success
+      toast.success('Account created successfully! Redirecting to login...');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
     } catch (error) {
       console.error('Registration error:', error);
-      alert('An error occurred during registration. Please try again.');
+      toast.error('An error occurred during registration. Please try again.');
     }
   };
 
@@ -101,7 +111,10 @@ export default function RegisterPage() {
           {/* Registration Form */}
           <div className="animate-fade-in-up animate-delay-200">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
@@ -168,9 +181,9 @@ export default function RegisterPage() {
                               placeholder="Create Password"
                               className="pl-10 pr-10"
                             />
-                            <button
+                            <Button
                               type="button"
-                              className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-purple-600 transition-colors"
+                              className="absolute inset-y-0 right-0 flex items-center hover:text-purple-600 transition-colors"
                               onClick={() => setShowPassword(!showPassword)}
                             >
                               {showPassword ? (
@@ -178,7 +191,7 @@ export default function RegisterPage() {
                               ) : (
                                 <Eye className="h-5 w-5 text-gray-400" />
                               )}
-                            </button>
+                            </Button>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -203,17 +216,19 @@ export default function RegisterPage() {
                               placeholder="Confirm Password"
                               className="pl-10 pr-10"
                             />
-                            <button
+                            <Button
                               type="button"
-                              className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-purple-600 transition-colors"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute inset-y-0 right-0 flex items-center hover:text-purple-600 transition-colors"
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
                             >
                               {showConfirmPassword ? (
                                 <EyeOff className="h-5 w-5 text-gray-400" />
                               ) : (
                                 <Eye className="h-5 w-5 text-gray-400" />
                               )}
-                            </button>
+                            </Button>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -223,19 +238,17 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Terms and Conditions */}
-                <div className="flex items-start animate-fade-in-up animate-delay-300">
-                  <div className="flex items-center h-5">
-                    <input
-                      id="terms"
-                      name="terms"
-                      type="checkbox"
+                <div className="flex items-center animate-fade-in-up animate-delay-300">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
                       checked={agreeToTerms}
-                      onChange={(e) => setAgreeToTerms(e.target.checked)}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mt-0.5"
+                      onCheckedChange={(checked) =>
+                        setAgreeToTerms(checked === true)
+                      }
                     />
                   </div>
                   <div className="ml-3 text-sm">
-                    <label htmlFor="terms" className="text-gray-700">
+                    <Label htmlFor="terms" className="text-gray-700">
                       I agree to the{' '}
                       <Link
                         href="/terms"
@@ -250,7 +263,7 @@ export default function RegisterPage() {
                       >
                         Privacy Policy
                       </Link>
-                    </label>
+                    </Label>
                   </div>
                 </div>
 
@@ -260,12 +273,16 @@ export default function RegisterPage() {
                   disabled={form.formState.isSubmitting || !agreeToTerms}
                   className="w-full bg-primary hover:bg-secondary text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 animate-fade-in-up animate-delay-400"
                 >
-                  {form.formState.isSubmitting ? 'Creating Account...' : 'Create Account'}
+                  {form.formState.isSubmitting
+                    ? 'Creating Account...'
+                    : 'Create Account'}
                 </Button>
 
                 {/* Login Link */}
                 <div className="text-center animate-fade-in-up animate-delay-400">
-                  <span className="text-gray-600">Already have an account? </span>
+                  <span className="text-gray-600">
+                    Already have an account?{' '}
+                  </span>
                   <Link
                     href="/login"
                     className="font-medium text-primary hover:text-secondary transition-colors"
