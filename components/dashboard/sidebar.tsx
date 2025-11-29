@@ -23,6 +23,19 @@ import { Badge } from '@/components/ui/badge';
 
 interface SidebarProps {
   userType: 'admin' | 'user';
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
+  sidebarOpen?: boolean;
+  setSidebarOpen?: (open: boolean) => void;
+}
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon?: any;
+  path?: string;
+  badge?: string;
+  subItems?: { id: string; label: string; path: string }[];
 }
 
 export default function Sidebar({ userType }: SidebarProps) {
@@ -30,7 +43,7 @@ export default function Sidebar({ userType }: SidebarProps) {
   const router = useRouter();
   const [expandedSection, setExpandedSection] = useState<string>('');
 
-  const adminMenuItems = [
+  const adminMenuItems: MenuItem[] = [
     {
       id: 'home',
       label: 'Home',
@@ -89,7 +102,7 @@ export default function Sidebar({ userType }: SidebarProps) {
     },
   ];
 
-  const userMenuItems = [
+  const userMenuItems: MenuItem[] = [
     {
       id: 'home',
       label: 'Home',
@@ -225,15 +238,15 @@ export default function Sidebar({ userType }: SidebarProps) {
                   </div>
                 ) : (
                   <button
-                    onClick={() => handleNavigation(item.path)}
+                    onClick={() => item.path && handleNavigation(item.path)}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive(item.path)
+                      item.path && isActive(item.path)
                         ? 'bg-purple-100 text-purple-900'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <item.icon className="h-4 w-4" />
+                      {item.icon && <item.icon className="h-4 w-4" />}
                       <span>{item.label}</span>
                     </div>
                     {item.badge && (

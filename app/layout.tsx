@@ -1,30 +1,35 @@
-import { Metadata } from 'next';
 import './globals.css';
+import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
-import { ThemeProvider } from '@/lib/theme-provider';
-import { ReactNode } from 'react';
-import { Toaster } from '@/components/ui/sonner';
+import Providers from '@/components/providers/session-provider';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
-const geist = Geist({ subsets: ['latin'] });
+const geist = Geist({
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
-  title: 'Moroccan Internship Platform',
-  description: 'Find, filter, and apply for internships in Morocco',
+  title: 'YDE - Youth & Digital Entrepreneurship',
+  description:
+    "1ère Édition du Colloque International sur l'Entrepreneuriat des Jeunes et le Digital - Vers des modèles d'affaires innovants et globaux en Afrique. 4-5 Novembre 2025, ENCG Agadir.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <body className={`${geist.className} min-h-dvh bg-white text-primary`}>
+    <html lang="fr" className={geist.className}>
+      <body className={`antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Providers>{children}</Providers>
         </ThemeProvider>
-        <Toaster />
       </body>
     </html>
   );

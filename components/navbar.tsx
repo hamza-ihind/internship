@@ -21,15 +21,10 @@ import {
   LogOut,
 } from 'lucide-react';
 import { ModeToggle } from './mode-toggle';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
-export function Navbar({ userName = 'You' }: { userName?: string }) {
+export function Navbar({ session }: { session?: Boolean }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  const { data: session, status } = useSession();
-  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -93,9 +88,7 @@ export function Navbar({ userName = 'You' }: { userName?: string }) {
                   className="flex items-center gap-2 text-secondary dark:text-muted-foreground"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      {userName?.slice(0, 2)?.toUpperCase() || 'ME'}
-                    </AvatarFallback>
+                    <AvatarFallback>ME</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
