@@ -40,8 +40,8 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
-          image: user.image,
+          name: user.name ?? undefined,
+          image: user.image ?? undefined,
           role: user.role,
         };
       },
@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.role = user.role;
+        token.role = user.role as any;
         token.image = user.image;
       }
 
@@ -73,24 +73,28 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.sub!;
+        session.user.role = token.role as any;
 
-        // Fetch fresh user data from database to ensure we have the latest image
+        // Fetch fresh user data from database to ensure we have the latest data
         const user = await prisma.user.findUnique({
           where: { id: token.sub! },
-          select: { image: true, name: true, email: true },
+          select: { image: true, name: true, email: true, role: true },
         });
 
         if (user) {
           session.user.email = user.email;
+          session.user.name = user.name as any;
+          session.user.image = user.image as any;
+          session.user.role = user.role;
         }
       }
       return session;
     },
   },
   pages: {
-    signIn: '/auth/connexion',
-    signOut: '/auth/connexion',
+    signIn: '/auth/login',
+    signOut: '/auth/login',
   },
 };

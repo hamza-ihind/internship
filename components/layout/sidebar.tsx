@@ -34,167 +34,32 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const adminNavItems = [
   {
-    name: 'Tableau de bord',
+    name: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
     group: 'dashboard',
   },
   {
-    name: 'Cellules',
-    href: '/admin/cellules',
+    name: 'Internships',
+    href: '/admin/internships',
     icon: Building2,
-    group: 'project',
+    group: 'management',
   },
-  { name: 'Segments', href: '/admin/segments', icon: Layers, group: 'project' },
   {
-    name: 'Tâches',
-    href: '/admin/taches',
-    icon: CheckSquare,
-    group: 'project',
-  },
-  { name: 'KPIs', href: '/admin/kpis', icon: BarChart3, group: 'project' },
-  {
-    name: 'Utilisateurs',
-    href: '/admin/utilisateurs',
+    name: 'Users',
+    href: '/admin/users',
     icon: Users,
     group: 'management',
   },
   {
-    name: 'Participants',
-    href: '/admin/invites',
-    icon: Users,
+    name: 'Companies',
+    href: '/admin/customers',
+    icon: Store,
     group: 'management',
   },
   {
-    name: 'Hébergement',
-    href: '/admin/hebergement',
-    icon: Hotel,
-    group: 'accommodations',
-  },
-  {
-    name: 'Restaurants',
-    href: '/admin/restaurants',
-    icon: UtensilsCrossed,
-    group: 'accommodations',
-  },
-  {
-    name: 'Accommodation',
-    href: '/admin/accommodation',
-    icon: ShoppingCart,
-    group: 'accommodations',
-  },
-  {
-    name: 'Divertissement',
-    href: '/admin/divertissement',
-    icon: Camera,
-    group: 'accommodations',
-  },
-  {
-    name: 'Notre École en Photos',
-    href: '/admin/gallerie',
-    icon: Image,
-    group: 'accommodations',
-  },
-  {
-    name: 'Programmes',
-    href: '/admin/documents',
-    icon: FileText,
-    group: 'content',
-  },
-  {
-    name: 'Certificats',
-    href: '/admin/certificates',
-    icon: Award,
-    group: 'content',
-  },
-  {
-    name: 'Messages',
-    href: '/chat',
-    icon: MessageCircle,
-    group: 'communication',
-  },
-  {
-    name: 'Paramètres',
-    href: '/parametres',
-    icon: Settings,
-    group: 'settings',
-  },
-];
-
-const piloteNavItems = [
-  {
-    name: 'Tableau de bord',
-    href: '/pilote',
-    icon: LayoutDashboard,
-    group: 'dashboard',
-  },
-  {
-    name: 'Participants',
-    href: '/pilote/invites',
-    icon: Users,
-    group: 'management',
-  },
-  {
-    name: 'Cellules',
-    href: '/pilote/cellules',
-    icon: Building2,
-    group: 'project',
-  },
-  {
-    name: 'Segments',
-    href: '/pilote/segments',
-    icon: Layers,
-    group: 'project',
-  },
-  {
-    name: 'Tâches',
-    href: '/pilote/taches',
-    icon: CheckSquare,
-    group: 'project',
-  },
-  { name: 'KPIs', href: '/pilote/kpis', icon: BarChart3, group: 'project' },
-  {
-    name: 'Messages',
-    href: '/chat',
-    icon: MessageCircle,
-    group: 'communication',
-  },
-  {
-    name: 'Paramètres',
-    href: '/parametres',
-    icon: Settings,
-    group: 'settings',
-  },
-];
-
-const responsableNavItems = [
-  {
-    name: 'Tableau de bord',
-    href: '/responsable',
-    icon: LayoutDashboard,
-    group: 'dashboard',
-  },
-  {
-    name: 'Mes Tâches',
-    href: '/responsable/taches',
-    icon: CheckSquare,
-    group: 'project',
-  },
-  {
-    name: 'Mes KPIs',
-    href: '/responsable/kpis',
-    icon: BarChart3,
-    group: 'project',
-  },
-  {
-    name: 'Messages',
-    href: '/chat',
-    icon: MessageCircle,
-    group: 'communication',
-  },
-  {
-    name: 'Paramètres',
-    href: '/parametres',
+    name: 'Settings',
+    href: '/admin/settings',
     icon: Settings,
     group: 'settings',
   },
@@ -202,92 +67,48 @@ const responsableNavItems = [
 
 const userNavItems = [
   {
-    name: 'Tableau de bord',
-    href: '/utilisateur',
+    name: 'Dashboard',
+    href: '/dashboard',
     icon: LayoutDashboard,
     group: 'dashboard',
   },
   {
-    name: 'Messages',
-    href: '/chat',
-    icon: MessageCircle,
-    group: 'communication',
+    name: 'Browse Internships',
+    href: '/internships',
+    icon: Building2,
+    group: 'internships',
   },
   {
-    name: 'Paramètres',
-    href: '/parametres',
-    icon: Settings,
+    name: 'My Applications',
+    href: '/dashboard/applications',
+    icon: CheckSquare,
+    group: 'internships',
+  },
+  {
+    name: 'Saved',
+    href: '/dashboard/saved',
+    icon: Award,
+    group: 'internships',
+  },
+  {
+    name: 'Profile',
+    href: '/dashboard/profile',
+    icon: Users,
     group: 'settings',
   },
-];
-
-const guestNavItems = [
   {
-    name: 'Accueil',
-    href: '/guest',
-    icon: LayoutDashboard,
-    group: 'dashboard',
-  },
-  {
-    name: 'Programme',
-    href: '/guest/program',
-    icon: FileText,
-    group: 'content',
-  },
-
-  {
-    name: 'Hébergement',
-    href: '/guest/hebergement',
-    icon: Building2,
-    group: 'accommodations',
-  },
-  {
-    name: 'Certificat',
-    href: '/guest/certificate',
-    icon: Award,
-    group: 'content',
-  },
-  {
-    name: "L'école en photos",
-    href: '/guest/gallerie',
-    icon: Image,
-    group: 'content',
-  },
-  {
-    name: 'Restaurants',
-    href: '/guest/restaurants',
-    icon: UtensilsCrossed,
-    group: 'accommodations',
-  },
-  {
-    name: 'Accomodations',
-    href: '/guest/accommodation',
-    icon: ShoppingCart,
-    group: 'accommodations',
-  },
-  {
-    name: 'Divertissement',
-    href: '/guest/divertissement',
-    icon: Camera,
-    group: 'accommodations',
-  },
-
-  {
-    name: 'Paramètres',
-    href: '/parametres',
+    name: 'Settings',
+    href: '/dashboard/settings',
     icon: Settings,
     group: 'settings',
   },
 ];
 
 const groupLabels = {
-  dashboard: 'Tableau de bord',
-  management: 'Gestion des participants',
-  project: 'Gestion du colloque',
-  accommodations: 'Hébergements & Services',
-  content: 'Documents Utiles',
-  communication: 'Communication',
-  settings: 'Paramètres',
+  dashboard: 'Dashboard',
+  management: 'Management',
+  internships: 'Internships',
+  settings: 'Settings',
 };
 
 export default function Sidebar() {
@@ -296,15 +117,12 @@ export default function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const getNavItems = () => {
-    switch (session?.user?.role) {
+    const userRole = session?.user?.role;
+    switch (userRole) {
       case 'ADMIN':
         return adminNavItems;
-      case 'PILOTE_CELLULE':
-        return piloteNavItems;
-      case 'RESPONSABLE_TACHE':
-        return responsableNavItems;
-      case 'GUEST':
-        return guestNavItems;
+      case 'USER':
+        return userNavItems;
       default:
         return userNavItems;
     }
@@ -397,7 +215,7 @@ export default function Sidebar() {
           <Button variant="outline" size="sm" asChild className="w-full">
             <Link href="/">
               <Home className="h-4 w-4 mr-2" />
-              Accueil
+              Home
             </Link>
           </Button>
           <Button
@@ -407,7 +225,7 @@ export default function Sidebar() {
             className="w-full"
           >
             <LogOut className="h-4 w-4 mr-2" />
-            Déconnexion
+            Sign Out
           </Button>
         </div>
       </div>

@@ -1,26 +1,29 @@
 import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
-    // Add any middleware logic here if needed
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
+export default withAuth(function middleware(req) {
+  const token = req.nextauth.token;
+  const { pathname } = req.nextUrl;
 
-        // Allow access to auth pages
-        if (pathname.startsWith('/auth')) {
-          return true;
-        }
-
-        // Require authentication for all other pages
-        return !!token;
-      },
-    },
+  // Check if user is trying to access admin routes
+  if (pathname.startsWith('/admin')) {
+    // If not admin, redirect to home
+    if (token?.role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
   }
-);
+
+  // Check if user is trying to access user dashboard
+  if (pathname.startsWith('/dashboard')) {
+    // If admin, redirect to admin dashboard
+    if (token?.role === 'ADMIN') {
+      return NextResponse.redirect(new URL('/admin', req.url));
+    }
+  }
+
+  return NextResponse.next();
+});
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/admin/:path*', '/dashboard/:path*', '/settinggs/:path*'],
 };

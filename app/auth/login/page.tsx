@@ -45,17 +45,11 @@ export default function ConnexionPage() {
             case 'ADMIN':
               router.push('/admin');
               break;
-            case 'PILOTE_CELLULE':
-              router.push('/pilote');
-              break;
-            case 'RESPONSABLE_TACHE':
-              router.push('/responsable');
-              break;
-            case 'GUEST':
-              router.push('/guest');
+            case 'USER':
+              router.push('/dashboard');
               break;
             default:
-              router.push('/utilisateur');
+              router.push('/dashboard');
           }
         }
       }
@@ -121,7 +115,7 @@ export default function ConnexionPage() {
             <p className="text-sm text-muted-foreground">
               Pas encore de compte ?{' '}
               <Link
-                href="/auth/inscription"
+                href="/auth/register"
                 className="text-primary hover:underline"
               >
                 S'inscrire

@@ -1,33 +1,39 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { UserPlus } from 'lucide-react'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { UserPlus } from 'lucide-react';
 
 export default function InscriptionPage() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas')
-      setIsLoading(false)
-      return
+      setError('Les mots de passe ne correspondent pas');
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -41,26 +47,28 @@ export default function InscriptionPage() {
           email,
           password,
         }),
-      })
+      });
 
       if (response.ok) {
-        router.push('/auth/connexion?message=Compte créé avec succès')
+        router.push('/auth/login?message=Compte créé avec succès');
       } else {
-        const data = await response.json()
-        setError(data.error || 'Une erreur est survenue')
+        const data = await response.json();
+        setError(data.error || 'Une erreur est survenue');
       }
     } catch (error) {
-      setError('Une erreur est survenue')
+      setError('Une erreur est survenue');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-primary">ENCG Agadir</CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">
+            ENCG Agadir
+          </CardTitle>
           <CardDescription>
             Créez votre compte pour accéder à la plateforme
           </CardDescription>
@@ -88,7 +96,7 @@ export default function InscriptionPage() {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
               <Input
@@ -119,11 +127,7 @@ export default function InscriptionPage() {
               </Alert>
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
               ) : (
@@ -136,10 +140,7 @@ export default function InscriptionPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Déjà un compte ?{' '}
-              <Link
-                href="/auth/connexion"
-                className="text-primary hover:underline"
-              >
+              <Link href="/auth/login" className="text-primary hover:underline">
                 Se connecter
               </Link>
             </p>
@@ -147,5 +148,5 @@ export default function InscriptionPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -73,13 +73,13 @@ export function Hero() {
             {/* Right Column - Hero Image/Illustration */}
             <div className="relative">
               {/* Main Hero Image */}
-              <div className="relative w-full h-96 lg:h-[500px] rounded-2xl overflow-hidden">
+              <div className="relative w-full h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
                 <img
-                  src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=Professional%20Moroccan%20students%20in%20modern%20office%20environment%2C%20diverse%20group%20working%20together%2C%20laptops%20and%20documents%2C%20bright%20lighting%2C%20contemporary%20workspace%2C%20business%20attire%2C%20confident%20and%20engaged%20expressions%2C%20high%20quality%2C%20professional%20photography&image_size=landscape_16_9"
-                  alt="Moroccan students in professional internship setting"
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
+                  alt="Professional team collaborating in modern workspace"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-accent/25 to-transparent dark:from-accent/35"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
               </div>
 
               {/* Floating Elements */}

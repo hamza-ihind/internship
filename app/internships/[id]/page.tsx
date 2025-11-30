@@ -21,11 +21,11 @@ import {
   Mail,
   Phone,
   Globe,
+  Send,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -38,153 +38,346 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Navbar } from '@/components/navbar';
+import { Footer } from '@/components/footer';
 
-// Extended dummy data with more details
+// Extended dummy data with more details - Moroccan Companies
 const detailedInternships = [
   {
     id: 1,
-    title: 'Web Developer Intern',
-    company: 'TBN Software Solutions & Consultancy',
-    location: 'Work From Home',
+    title: 'Full Stack Developer',
+    company: 'Capgemini Maroc',
+    location: 'Casablanca',
     startDate: 'Immediately',
-    duration: '5 Months',
-    stipend: 'Unpaid',
-    lastDate: '28-02-2024',
-    tags: ['Part Time', 'Pre Placement Opportunity'],
-    posted: '24 Days Ago',
-    logo: 'https://via.placeholder.com/80x80/4F46E5/FFFFFF?text=TBN',
+    duration: '6 Months',
+    stipend: '3000 DH /month',
+    lastDate: '15-01-2026',
+    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
+    posted: '5 Days Ago',
+    logo: 'https://logo.clearbit.com/capgemini.com',
     isClosed: false,
 
     // Detailed information
     description:
-      'We are looking for a passionate Web Developer Intern to join our dynamic team. This internship offers hands-on experience in developing modern web applications using cutting-edge technologies. You will work on real projects that impact thousands of users.',
+      'Join Capgemini Morocco, a global leader in consulting, technology services, and digital transformation. This internship offers hands-on experience in developing full-stack web applications using modern technologies. You will work with experienced engineers on projects for international clients across various sectors.',
 
     responsibilities: [
-      'Develop and maintain web applications using React, Node.js, and MongoDB',
-      'Collaborate with the design team to implement responsive UI/UX designs',
-      'Write clean, efficient, and well-documented code',
-      'Participate in code reviews and team meetings',
-      'Debug and fix issues in existing applications',
-      'Learn and implement best practices in web development',
+      'Develop and maintain web applications using React, Angular, Node.js, and databases',
+      'Collaborate with cross-functional teams to implement responsive and scalable solutions',
+      'Write clean, maintainable, and well-documented code following best practices',
+      'Participate in agile ceremonies including daily standups, sprint planning, and retrospectives',
+      'Debug and optimize existing applications for better performance',
+      'Learn and implement industry-standard development methodologies and DevOps practices',
     ],
 
     requirements: [
-      "Pursuing or completed Bachelor's degree in Computer Science or related field",
-      'Basic knowledge of HTML, CSS, and JavaScript',
-      'Familiarity with React or other frontend frameworks is a plus',
+      "Pursuing or completed Bachelor's or Master's degree in Computer Science, Software Engineering, or related field",
+      'Strong knowledge of HTML, CSS, JavaScript, and modern frameworks (React, Angular, or Vue.js)',
+      'Understanding of backend technologies (Node.js, Java, or .NET)',
+      'Familiarity with databases (SQL and NoSQL)',
       'Good problem-solving and analytical skills',
-      'Strong communication and teamwork abilities',
-      'Eagerness to learn and adapt to new technologies',
+      'Excellent communication skills in French or English',
+      'Ability to work in a team environment',
     ],
 
     perks: [
-      'Certificate of completion',
-      'Letter of recommendation',
-      'Flexible work hours',
-      'Mentorship from experienced developers',
-      'Opportunity for full-time employment',
-      'Access to premium learning resources',
+      'Competitive stipend of 3000 DH per month',
+      'Official internship certificate',
+      'Letter of recommendation upon successful completion',
+      'Mentorship from senior developers and architects',
+      'Pre-placement opportunity for outstanding performers',
+      'Access to Capgemini University and learning platforms',
+      'Flexible working hours',
+      'Modern office facilities in Casablanca Twin Center',
     ],
 
     skills: [
       'React',
+      'Angular',
       'JavaScript',
-      'HTML',
-      'CSS',
+      'TypeScript',
       'Node.js',
+      'Java',
+      'SQL',
       'MongoDB',
       'Git',
       'REST APIs',
+      'Agile/Scrum',
     ],
 
     companyInfo: {
-      name: 'TBN Software Solutions & Consultancy',
+      name: 'Capgemini Maroc',
       about:
-        'TBN Software Solutions is a leading IT services company specializing in web and mobile application development. We serve clients across various industries including healthcare, education, and e-commerce.',
-      website: 'www.tbnsolutions.com',
-      size: '50-200 employees',
-      founded: '2015',
-      industry: 'Information Technology',
-      headquarters: 'Mumbai, India',
+        'Capgemini is a global leader in partnering with companies to transform and manage their business by harnessing the power of technology. With over 5,000 employees in Morocco across multiple delivery centers, Capgemini Morocco serves clients worldwide with expertise in digital transformation, cloud services, cybersecurity, and AI.',
+      website: 'www.capgemini.com',
+      size: '5,000+ employees in Morocco',
+      founded: '1967 (Morocco presence since 2000s)',
+      industry: 'Information Technology & Consulting',
+      headquarters: 'Casablanca, Morocco',
     },
 
     applicationInfo: {
       process:
-        'Online application with resume screening, technical assessment, and final interview',
-      timeline: 'Applications reviewed within 7 days',
-      contact: 'hr@tbnsolutions.com',
+        'Online application, resume screening, technical assessment (coding test), HR interview, and technical interview with team leads',
+      timeline: 'Applications reviewed within 7-10 days',
+      contact: 'recruitment.morocco@capgemini.com',
     },
   },
   {
     id: 2,
-    title: 'Hotel Sales Intern',
-    company: 'PRASADS SP ENTERTAINMENT LLP',
-    location: 'Vijayawada',
-    startDate: '20-11-2023',
-    duration: '6 Months',
-    stipend: '₹ 11,000 /month',
-    lastDate: '18-11-2023',
+    title: 'Data Analyst',
+    company: 'Attijariwafa Bank',
+    location: 'Rabat',
+    startDate: '01-02-2026',
+    duration: '4 Months',
+    stipend: '2500 DH /month',
+    lastDate: '20-01-2026',
     tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '26 Days Ago',
-    logo: 'https://via.placeholder.com/80x80/EF4444/FFFFFF?text=PS',
+    posted: '3 Days Ago',
+    logo: 'https://logo.clearbit.com/attijariwafabank.com',
     isClosed: false,
 
     description:
-      "Join our dynamic sales team at one of Vijayawada's premier entertainment complexes. This internship will provide you with hands-on experience in hospitality sales, customer relationship management, and business development in the entertainment industry.",
+      "Join Morocco's leading banking group as a Data Analyst Intern. This internship provides a unique opportunity to work with large-scale financial data, develop analytical models, and contribute to strategic decision-making processes. You'll be part of the Data & Analytics department working on real business challenges.",
 
     responsibilities: [
-      'Assist in developing sales strategies for hotel and entertainment services',
-      'Handle customer inquiries and provide excellent service',
-      'Maintain relationships with corporate clients and travel agencies',
-      'Prepare sales reports and analyze market trends',
-      'Coordinate with different departments for customer requirements',
-      'Participate in promotional events and marketing activities',
+      'Collect, clean, and analyze large datasets from various banking systems',
+      'Create dashboards and visualizations using Power BI and Tableau',
+      'Assist in developing predictive models for customer behavior and risk assessment',
+      'Generate reports and insights to support business decision-making',
+      'Collaborate with IT and business teams to understand data requirements',
+      'Participate in data governance and quality assurance initiatives',
     ],
 
     requirements: [
-      "Pursuing or completed Bachelor's degree in Business Administration, Marketing, or related field",
-      'Excellent communication and interpersonal skills',
-      'Basic knowledge of sales principles and customer service',
-      'Proficiency in MS Office (Word, Excel, PowerPoint)',
-      'Willingness to work in a fast-paced environment',
-      'Local language proficiency preferred',
+      "Pursuing or completed Bachelor's or Master's degree in Data Science, Statistics, Computer Science, or related field",
+      'Proficiency in SQL and database management',
+      'Experience with data visualization tools (Power BI, Tableau, or similar)',
+      'Knowledge of Python or R for data analysis',
+      'Understanding of statistical methods and data mining techniques',
+      'Strong analytical and problem-solving skills',
+      'Excellent communication skills in French and Arabic',
+      'Interest in banking and financial services',
     ],
 
     perks: [
-      'Competitive stipend of ₹11,000 per month',
-      'Certificate of completion',
-      'Free meals during work hours',
-      'Uniform provided',
+      'Competitive stipend of 2500 DH per month',
+      'Certificate of completion from a leading banking institution',
+      'Exposure to real-world banking data and analytics',
+      'Mentorship from experienced data professionals',
+      'Pre-placement opportunity based on performance',
+      'Access to professional development programs',
       'Transportation allowance',
-      'Networking opportunities with industry professionals',
+      'Staff cafeteria access',
     ],
 
     skills: [
-      'Sales',
-      'Customer Service',
-      'Communication',
-      'MS Office',
-      'Relationship Management',
-      'Hospitality',
+      'SQL',
+      'Python',
+      'R',
+      'Power BI',
+      'Tableau',
+      'Excel',
+      'Data Mining',
+      'Statistical Analysis',
+      'Machine Learning',
+      'ETL',
     ],
 
     companyInfo: {
-      name: 'PRASADS SP ENTERTAINMENT LLP',
+      name: 'Attijariwafa Bank',
       about:
-        'Prasads Entertainment is a leading entertainment and hospitality company operating multiplex cinemas, food courts, and recreational facilities across South India.',
-      website: 'www.prasadentertainment.com',
-      size: '200-500 employees',
-      founded: '2002',
-      industry: 'Entertainment & Hospitality',
-      headquarters: 'Hyderabad, India',
+        "Attijariwafa bank is Morocco's leading banking and financial services group with a presence in 26 countries across Africa, Europe, and the Middle East. With over 20,000 employees and a strong commitment to innovation and digital transformation, the bank offers a dynamic environment for young professionals.",
+      website: 'www.attijariwafabank.com',
+      size: '20,000+ employees',
+      founded: '1904',
+      industry: 'Banking & Financial Services',
+      headquarters: 'Casablanca, Morocco',
     },
 
     applicationInfo: {
       process:
-        'Resume screening, telephonic interview, and in-person interview',
-      timeline: 'Applications reviewed within 5 days',
-      contact: 'careers@prasadentertainment.com',
+        'Online application, CV screening, technical test (SQL and analytics), HR interview, and final interview with department manager',
+      timeline: 'Applications reviewed within 5-7 days',
+      contact: 'recrutement@attijariwafa.com',
     },
+  },
+  {
+    id: 3,
+    title: 'UI/UX Designer',
+    company: 'Majorel Morocco',
+    location: 'Work From Home',
+    startDate: '15-01-2026',
+    duration: '3 Months',
+    stipend: '2000 DH /month',
+    lastDate: '10-01-2026',
+    tags: ['Part Time', 'Pre Placement Opportunity'],
+    posted: '7 Days Ago',
+    logo: 'https://logo.clearbit.com/majorel.com',
+    isClosed: false,
+
+    description:
+      'Majorel Morocco is looking for a creative UI/UX Designer Intern to join our digital solutions team. This remote internship offers the flexibility to work from home while gaining valuable experience in designing user interfaces and experiences for international clients. You will work on diverse projects ranging from mobile apps to web platforms.',
+
+    responsibilities: [
+      'Design intuitive and visually appealing user interfaces for web and mobile applications',
+      'Create wireframes, prototypes, and mockups using Figma or Adobe XD',
+      'Conduct user research and usability testing to gather insights',
+      'Collaborate with developers and product managers to implement designs',
+      'Maintain and evolve design systems and style guides',
+      'Present design concepts and iterations to stakeholders',
+    ],
+
+    requirements: [
+      "Pursuing or completed Bachelor's degree in Design, HCI, or related field",
+      'Proficiency in design tools (Figma, Adobe XD, Sketch, or similar)',
+      'Understanding of user-centered design principles and best practices',
+      'Basic knowledge of HTML/CSS is a plus',
+      'Strong portfolio showcasing UI/UX design projects',
+      'Excellent visual design skills with attention to detail',
+      'Good communication skills in French or English',
+      'Self-motivated and able to work independently in a remote setting',
+    ],
+
+    perks: [
+      'Flexible remote work arrangement',
+      'Stipend of 2000 DH per month',
+      'Certificate of completion',
+      'Build your portfolio with real-world projects',
+      'Mentorship from senior designers',
+      'Opportunity for full-time employment',
+      'Access to design tools and resources',
+      'Participate in design workshops and webinars',
+    ],
+
+    skills: [
+      'Figma',
+      'Adobe XD',
+      'Sketch',
+      'Photoshop',
+      'Illustrator',
+      'Prototyping',
+      'User Research',
+      'Wireframing',
+      'Design Systems',
+      'Responsive Design',
+    ],
+
+    companyInfo: {
+      name: 'Majorel Morocco',
+      about:
+        'Majorel is a leading provider of customer experience and digital services for global brands. With a strong presence in Morocco and over 10,000 employees across multiple sites, Majorel combines passion, innovation, and technology to deliver outstanding customer experiences.',
+      website: 'www.majorel.com',
+      size: '10,000+ employees in Morocco',
+      founded: '2019 (operations in Morocco since earlier)',
+      industry: 'Customer Experience & Digital Services',
+      headquarters: 'Rabat & Casablanca, Morocco',
+    },
+
+    applicationInfo: {
+      process:
+        'Online portfolio submission, portfolio review, design challenge, HR interview, and final interview with design team lead',
+      timeline: 'Applications reviewed within 5 days',
+      contact: 'careers.morocco@majorel.com',
+    },
+  },
+  {
+    id: 4,
+    title: 'Marketing & Communication',
+    company: 'Maroc Telecom',
+    location: 'Casablanca',
+    startDate: '01-01-2026',
+    duration: '5 Months',
+    stipend: '3500 DH /month',
+    lastDate: '25-12-2025',
+    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
+    posted: '12 Days Ago',
+    logo: 'https://logo.clearbit.com/iam.ma',
+    isClosed: true,
+  },
+  {
+    id: 5,
+    title: 'Software Engineer',
+    company: 'SQLI Morocco',
+    location: 'Rabat',
+    startDate: '10-01-2026',
+    duration: '6 Months',
+    stipend: '3200 DH /month',
+    lastDate: '05-01-2026',
+    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
+    posted: '2 Days Ago',
+    logo: 'https://logo.clearbit.com/sqli.com',
+    isClosed: false,
+  },
+  {
+    id: 6,
+    title: 'Business Intelligence Intern',
+    company: 'OCP Group',
+    location: 'Casablanca',
+    startDate: '01-02-2026',
+    duration: '6 Months',
+    stipend: '4000 DH /month',
+    lastDate: '15-01-2026',
+    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
+    posted: '4 Days Ago',
+    logo: 'https://logo.clearbit.com/ocpgroup.ma',
+    isClosed: false,
+  },
+  {
+    id: 7,
+    title: 'Mobile Developer',
+    company: 'Société Générale Maroc',
+    location: 'Casablanca',
+    startDate: '20-01-2026',
+    duration: '5 Months',
+    stipend: '3500 DH /month',
+    lastDate: '10-01-2026',
+    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
+    posted: '6 Days Ago',
+    logo: 'https://logo.clearbit.com/societegenerale.com',
+    isClosed: false,
+  },
+  {
+    id: 8,
+    title: 'Digital Marketing',
+    company: 'Jumia Morocco',
+    location: 'Work From Home',
+    startDate: 'Immediately',
+    duration: '3 Months',
+    stipend: '2200 DH /month',
+    lastDate: '31-12-2025',
+    tags: ['Part Time', 'Pre Placement Opportunity'],
+    posted: '1 Day Ago',
+    logo: 'https://logo.clearbit.com/jumia.com',
+    isClosed: false,
+  },
+  {
+    id: 9,
+    title: 'DevOps Engineer',
+    company: 'Sopra Steria Morocco',
+    location: 'Rabat',
+    startDate: '15-01-2026',
+    duration: '6 Months',
+    stipend: '3800 DH /month',
+    lastDate: '08-01-2026',
+    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
+    posted: '3 Days Ago',
+    logo: 'https://logo.clearbit.com/soprasteria.com',
+    isClosed: false,
+  },
+  {
+    id: 10,
+    title: 'Cybersecurity Analyst',
+    company: 'Inwi',
+    location: 'Casablanca',
+    startDate: '01-02-2026',
+    duration: '4 Months',
+    stipend: '3000 DH /month',
+    lastDate: '20-01-2026',
+    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
+    posted: '8 Days Ago',
+    logo: 'https://logo.clearbit.com/inwi.ma',
+    isClosed: false,
   },
 ];
 
@@ -194,6 +387,7 @@ export default function InternshipDetailsPage() {
   const [internship, setInternship] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [applicationData, setApplicationData] = useState({
     name: '',
     email: '',
@@ -216,598 +410,559 @@ export default function InternshipDetailsPage() {
 
   const handleApplicationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the application data to your backend
     alert(
       'Application submitted successfully! You will hear back within 7 days.'
     );
     setShowApplicationForm(false);
   };
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: internship?.title,
+        text: `Check out this internship opportunity at ${internship?.company}`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
+
+  const handleSave = () => {
+    setIsSaved(!isSaved);
+    alert(isSaved ? 'Removed from saved' : 'Saved successfully!');
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-purple-600">Loading internship details...</p>
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-primary">Loading internship details...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!internship) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Internship Not Found
-          </h2>
-          <p className="text-gray-600 mb-6">
-            The internship you're looking for doesn't exist or has been removed.
-          </p>
-          <Button
-            onClick={() => router.push('/internships')}
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            Browse Other Internships
-          </Button>
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center max-w-md mx-auto px-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
+              Internship Not Found
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              The internship you're looking for doesn't exist or has been
+              removed.
+            </p>
+            <Button
+              onClick={() => router.push('/internships')}
+              className="bg-primary hover:bg-primary/90"
+            >
+              Browse Other Internships
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-background">
+        {/* Hero Section */}
+        <div className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 border-b border-border">
+          <div className="container mx-auto px-4 py-8 md:py-12">
+            {/* Action Buttons Row */}
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <Button
-                variant="ghost"
+                variant="outline"
                 onClick={() => router.push('/internships')}
-                className="text-purple-700 hover:text-purple-800"
+                className="gap-2"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Internships
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back to Internships</span>
+                <span className="sm:hidden">Back</span>
               </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShare}
+                  className="gap-2"
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Share</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSave}
+                  className="gap-2"
+                >
+                  <Bookmark
+                    className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`}
+                  />
+                  <span className="hidden sm:inline">
+                    {isSaved ? 'Saved' : 'Save'}
+                  </span>
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm" className="text-purple-700">
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <Button variant="ghost" size="sm" className="text-purple-700">
-                <Bookmark className="h-4 w-4 mr-2" />
-                Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Header Card */}
-            <Card className="p-6">
-              <div className="flex items-start space-x-6">
+            {/* Header Content */}
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="flex-shrink-0">
                 <img
                   src={internship.logo}
                   alt={internship.company}
-                  className="w-20 h-20 rounded-xl object-cover"
+                  className="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover border-2 border-border shadow-lg"
                 />
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h1 className="text-3xl font-bold text-purple-900 mb-2">
-                        {internship.title}
-                      </h1>
-                      <p className="text-lg text-gray-600 mb-2">
-                        {internship.company}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {internship.tags.map((tag: string, index: number) => (
-                          <Badge
-                            key={index}
-                            className={
-                              tag === 'Part Time'
-                                ? 'bg-blue-100 text-blue-800'
-                                : tag === 'Full Time'
-                                ? 'bg-blue-100 text-blue-800'
-                                : tag === 'Regular (In-office)'
-                                ? 'bg-teal-100 text-teal-800'
-                                : tag === 'Preferably Male'
-                                ? 'bg-gray-100 text-gray-800'
-                                : tag === 'Pre Placement Opportunity'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-500 mb-2">
-                        {internship.posted}
-                      </p>
-                      {internship.isClosed && (
-                        <Badge className="bg-red-100 text-red-800">
-                          Internship Closed
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Key Details */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-5 w-5 text-purple-500" />
-                      <div>
-                        <p className="text-xs text-gray-500">Location</p>
-                        <p className="font-medium text-sm">
-                          {internship.location}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-5 w-5 text-purple-500" />
-                      <div>
-                        <p className="text-xs text-gray-500">Start Date</p>
-                        <p className="font-medium text-sm">
-                          {internship.startDate}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-5 w-5 text-purple-500" />
-                      <div>
-                        <p className="text-xs text-gray-500">Duration</p>
-                        <p className="font-medium text-sm">
-                          {internship.duration}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <DollarSign className="h-5 w-5 text-purple-500" />
-                      <div>
-                        <p className="text-xs text-gray-500">Stipend</p>
-                        <p className="font-medium text-sm">
-                          {internship.stipend}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
-            </Card>
-
-            {/* Application Deadline */}
-            <Card className="p-4 bg-purple-50 border-purple-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-5 w-5 text-purple-600" />
-                  <div>
-                    <p className="font-medium text-purple-900">
-                      Application Deadline
-                    </p>
-                    <p className="text-sm text-purple-700">
-                      {internship.lastDate}
-                    </p>
-                  </div>
-                </div>
-                {!internship.isClosed && (
-                  <Dialog
-                    open={showApplicationForm}
-                    onOpenChange={setShowApplicationForm}
-                  >
-                    <DialogTrigger asChild>
-                      <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                        Apply Now
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle>Apply for {internship.title}</DialogTitle>
-                        <DialogDescription>
-                          Submit your application for the internship at{' '}
-                          {internship.company}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form
-                        onSubmit={handleApplicationSubmit}
-                        className="space-y-4 mt-4"
-                      >
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="name">Full Name *</Label>
-                            <Input
-                              id="name"
-                              value={applicationData.name}
-                              onChange={(e) =>
-                                setApplicationData({
-                                  ...applicationData,
-                                  name: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="email">Email Address *</Label>
-                            <Input
-                              id="email"
-                              type="email"
-                              value={applicationData.email}
-                              onChange={(e) =>
-                                setApplicationData({
-                                  ...applicationData,
-                                  email: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="phone">Phone Number *</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            value={applicationData.phone}
-                            onChange={(e) =>
-                              setApplicationData({
-                                ...applicationData,
-                                phone: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="resume">Resume/CV Link *</Label>
-                          <Input
-                            id="resume"
-                            placeholder="Enter Google Drive link or portfolio URL"
-                            value={applicationData.resume}
-                            onChange={(e) =>
-                              setApplicationData({
-                                ...applicationData,
-                                resume: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="coverLetter">Cover Letter</Label>
-                          <Textarea
-                            id="coverLetter"
-                            placeholder="Tell us why you're a great fit for this internship..."
-                            rows={4}
-                            value={applicationData.coverLetter}
-                            onChange={(e) =>
-                              setApplicationData({
-                                ...applicationData,
-                                coverLetter: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="flex justify-end space-x-3">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setShowApplicationForm(false)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            type="submit"
-                            className="bg-purple-600 hover:bg-purple-700"
-                          >
-                            Submit Application
-                          </Button>
-                        </div>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                )}
-              </div>
-            </Card>
-
-            {/* Tabs Section */}
-            <Tabs defaultValue="description" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="description">Description</TabsTrigger>
-                <TabsTrigger value="responsibilities">
-                  Responsibilities
-                </TabsTrigger>
-                <TabsTrigger value="requirements">Requirements</TabsTrigger>
-                <TabsTrigger value="perks">Perks</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="description" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>About the Internship</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-700 leading-relaxed">
-                      {internship.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="responsibilities" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Key Responsibilities</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {internship.responsibilities.map(
-                        (responsibility: string, index: number) => (
-                          <li
-                            key={index}
-                            className="flex items-start space-x-3"
-                          >
-                            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-700">
-                              {responsibility}
-                            </span>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="requirements" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Requirements</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {internship.requirements.map(
-                        (requirement: string, index: number) => (
-                          <li
-                            key={index}
-                            className="flex items-start space-x-3"
-                          >
-                            <CheckCircle className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-700">{requirement}</span>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="perks" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Perks & Benefits</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {internship.perks.map((perk: string, index: number) => (
-                        <li key={index} className="flex items-start space-x-3">
-                          <Award className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700">{perk}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-
-            {/* Skills Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Skills You'll Learn</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {internship.skills.map((skill: string, index: number) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="bg-purple-100 text-purple-800"
-                    >
-                      {skill}
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {internship.tags.map((tag: string, index: number) => (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {tag}
                     </Badge>
                   ))}
+                  {internship.isClosed && (
+                    <Badge variant="destructive" className="text-xs">
+                      Closed
+                    </Badge>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-2">
+                  {internship.title}
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground mb-4">
+                  {internship.company}
+                </p>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Company Information */}
-            <Card className="p-6">
-              <CardHeader className="p-0 mb-4">
-                <CardTitle className="flex items-center space-x-2">
-                  <Building2 className="h-5 w-5" />
-                  <span>Company Information</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 space-y-4">
-                <div>
-                  <h3 className="font-semibold text-lg text-purple-900 mb-2">
-                    {internship.companyInfo.name}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {internship.companyInfo.about}
-                  </p>
-                </div>
-
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Industry:</span>
-                    <span className="font-medium">
-                      {internship.companyInfo.industry}
-                    </span>
+                {/* Key Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="flex items-center gap-2 bg-background/60 backdrop-blur-sm rounded-lg p-3 border border-border">
+                    <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">Location</p>
+                      <p className="font-medium text-sm truncate">
+                        {internship.location}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Company Size:</span>
-                    <span className="font-medium">
-                      {internship.companyInfo.size}
-                    </span>
+                  <div className="flex items-center gap-2 bg-background/60 backdrop-blur-sm rounded-lg p-3 border border-border">
+                    <DollarSign className="h-4 w-4 text-primary flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">Stipend</p>
+                      <p className="font-medium text-sm truncate">
+                        {internship.stipend}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Founded:</span>
-                    <span className="font-medium">
-                      {internship.companyInfo.founded}
-                    </span>
+                  <div className="flex items-center gap-2 bg-background/60 backdrop-blur-sm rounded-lg p-3 border border-border">
+                    <Clock className="h-4 w-4 text-primary flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">Duration</p>
+                      <p className="font-medium text-sm truncate">
+                        {internship.duration}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Headquarters:</span>
-                    <span className="font-medium">
-                      {internship.companyInfo.headquarters}
-                    </span>
+                  <div className="flex items-center gap-2 bg-background/60 backdrop-blur-sm rounded-lg p-3 border border-border">
+                    <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">Deadline</p>
+                      <p className="font-medium text-sm text-destructive truncate">
+                        {internship.lastDate}
+                      </p>
+                    </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="pt-4 border-t">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Globe className="h-4 w-4" />
-                    <a
-                      href={`https://${internship.companyInfo.website}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-purple-600"
+            {/* Apply Button */}
+            {!internship.isClosed && (
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <Dialog
+                  open={showApplicationForm}
+                  onOpenChange={setShowApplicationForm}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="text-base gap-2 w-full sm:w-auto"
                     >
-                      {internship.companyInfo.website}
-                    </a>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                      <Send className="h-4 w-4" />
+                      Apply Now
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Apply for {internship.title}</DialogTitle>
+                      <DialogDescription>
+                        Submit your application for the internship at{' '}
+                        {internship.company}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form
+                      onSubmit={handleApplicationSubmit}
+                      className="space-y-4 mt-4"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="name">Full Name *</Label>
+                          <Input
+                            id="name"
+                            value={applicationData.name}
+                            onChange={(e) =>
+                              setApplicationData({
+                                ...applicationData,
+                                name: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="email">Email Address *</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={applicationData.email}
+                            onChange={(e) =>
+                              setApplicationData({
+                                ...applicationData,
+                                email: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone Number *</Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          value={applicationData.phone}
+                          onChange={(e) =>
+                            setApplicationData({
+                              ...applicationData,
+                              phone: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="resume">Resume/CV Link *</Label>
+                        <Input
+                          id="resume"
+                          placeholder="Enter Google Drive link or portfolio URL"
+                          value={applicationData.resume}
+                          onChange={(e) =>
+                            setApplicationData({
+                              ...applicationData,
+                              resume: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="coverLetter">Cover Letter</Label>
+                        <Textarea
+                          id="coverLetter"
+                          placeholder="Tell us why you're a great fit for this internship..."
+                          rows={4}
+                          value={applicationData.coverLetter}
+                          onChange={(e) =>
+                            setApplicationData({
+                              ...applicationData,
+                              coverLetter: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setShowApplicationForm(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit">Submit Application</Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+                <p className="text-sm text-muted-foreground self-center">
+                  Posted {internship.posted}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
-            {/* Application Process */}
-            <Card className="p-6">
-              <CardHeader className="p-0 mb-4">
-                <CardTitle className="flex items-center space-x-2">
-                  <Briefcase className="h-5 w-5" />
-                  <span>Application Process</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 space-y-3">
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Left Column - Main Details */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Description */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    About the Internship
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {internship.description}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Responsibilities */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Briefcase className="h-5 w-5 text-primary" />
+                    Key Responsibilities
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {internship.responsibilities.map(
+                      (responsibility: string, index: number) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">
+                            {responsibility}
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Requirements */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    Requirements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {internship.requirements.map(
+                      (requirement: string, index: number) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">
+                            {requirement}
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Perks */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5 text-primary" />
+                    Perks & Benefits
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {internship.perks.map((perk: string, index: number) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <Star className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-muted-foreground">{perk}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Skills */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Skills You'll Learn</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {internship.skills.map((skill: string, index: number) => (
+                      <Badge key={index} variant="secondary">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Sidebar */}
+            <div className="space-y-6">
+              {/* Company Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-primary" />
+                    Company Info
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">
+                      {internship.companyInfo.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {internship.companyInfo.about}
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Industry:</span>
+                      <span className="font-medium text-right">
+                        {internship.companyInfo.industry}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Size:</span>
+                      <span className="font-medium text-right">
+                        {internship.companyInfo.size}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Founded:</span>
+                      <span className="font-medium text-right">
+                        {internship.companyInfo.founded}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Location:</span>
+                      <span className="font-medium text-right">
+                        {internship.companyInfo.headquarters}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() =>
+                      window.open(
+                        `https://${internship.companyInfo.website}`,
+                        '_blank'
+                      )
+                    }
+                  >
+                    <Globe className="h-4 w-4" />
+                    Visit Website
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Application Process */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5 text-primary" />
+                    Application Process
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
                     {internship.applicationInfo.process}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {internship.applicationInfo.timeline}
                   </p>
-                </div>
-                <div className="pt-3 border-t">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Mail className="h-4 w-4" />
+                  <Separator />
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-4 w-4 text-primary" />
                     <a
                       href={`mailto:${internship.applicationInfo.contact}`}
-                      className="hover:text-purple-600"
+                      className="text-primary hover:underline"
                     >
                       {internship.applicationInfo.contact}
                     </a>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Quick Stats */}
-            <Card className="p-6">
-              <CardHeader className="p-0 mb-4">
-                <CardTitle className="flex items-center space-x-2">
-                  <Star className="h-5 w-5" />
-                  <span>Quick Overview</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Duration:</span>
-                  <span className="font-medium">{internship.duration}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Stipend:</span>
-                  <span className="font-medium text-green-600">
-                    {internship.stipend}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Location:</span>
-                  <span className="font-medium">{internship.location}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Start Date:</span>
-                  <span className="font-medium">{internship.startDate}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Application Deadline:</span>
-                  <span className="font-medium text-red-600">
-                    {internship.lastDate}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Similar Internships */}
-            <Card className="p-6">
-              <CardHeader className="p-0 mb-4">
-                <CardTitle>Similar Opportunities</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 space-y-3">
-                {detailedInternships
-                  .filter(
-                    (item) =>
-                      item.id !== internship.id &&
-                      item.tags.some((tag: string) =>
-                        internship.tags.includes(tag)
-                      )
-                  )
-                  .slice(0, 3)
-                  .map((similar: any) => (
-                    <div
-                      key={similar.id}
-                      className="border-b pb-3 last:border-b-0 last:pb-0"
-                    >
-                      <h4 className="font-medium text-purple-900 mb-1">
-                        {similar.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 mb-2">
-                        {similar.company}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-500">
-                          {similar.location}
-                        </span>
-                        <Button
-                          variant="link"
-                          size="sm"
-                          onClick={() =>
-                            router.push(`/internships/${similar.id}`)
-                          }
-                          className="text-purple-600 p-0 h-auto"
-                        >
-                          View →
-                        </Button>
+              {/* Similar Internships */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Similar Opportunities</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {detailedInternships
+                    .filter(
+                      (item) =>
+                        item.id !== internship.id &&
+                        item.tags.some((tag: string) =>
+                          internship.tags.includes(tag)
+                        )
+                    )
+                    .slice(0, 3)
+                    .map((similar: any) => (
+                      <div
+                        key={similar.id}
+                        className="border-b pb-4 last:border-b-0 last:pb-0"
+                      >
+                        <h4 className="font-medium mb-1 hover:text-primary cursor-pointer">
+                          {similar.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {similar.company}
+                        </p>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">
+                            {similar.location}
+                          </span>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            onClick={() =>
+                              router.push(`/internships/${similar.id}`)
+                            }
+                            className="p-0 h-auto"
+                          >
+                            View →
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </CardContent>
-            </Card>
+                    ))}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

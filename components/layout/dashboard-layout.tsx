@@ -21,27 +21,22 @@ export default function DashboardLayout({
     if (status === 'loading') return;
 
     if (!session) {
-      router.push('/auth/connexion');
+      router.push('/auth/login');
       return;
     }
 
-    if (requiredRole && !requiredRole.includes(session.user.role)) {
+    const userRole = session.user?.role;
+    if (requiredRole && userRole && !requiredRole.includes(userRole)) {
       // Redirect to appropriate dashboard based on role
-      switch (session.user.role) {
+      switch (userRole) {
         case 'ADMIN':
           router.push('/admin');
           break;
-        case 'PILOTE_CELLULE':
-          router.push('/pilote');
-          break;
-        case 'RESPONSABLE_TACHE':
-          router.push('/responsable');
-          break;
-        case 'GUEST':
-          router.push('/guest');
+        case 'USER':
+          router.push('/dashboard');
           break;
         default:
-          router.push('/utilisateur');
+          router.push('/dashboard');
       }
     }
   }, [session, status, router, requiredRole]);
