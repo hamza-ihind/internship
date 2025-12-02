@@ -55,6 +55,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role as any;
         token.image = user.image;
+        token.onboardingCompleted = user.onboardingCompleted;
       }
 
       // Handle session update (when user updates profile)
@@ -68,6 +69,20 @@ export const authOptions: NextAuthOptions = {
         if (session.email !== undefined) {
           token.email = session.email;
         }
+        if (session.onboardingCompleted !== undefined) {
+          token.onboardingCompleted = session.onboardingCompleted;
+        }
+      }
+
+      // Refresh onboarding status from database on each request
+      if (token.sub) {
+        const user = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { onboardingCompleted: true },
+        });
+        if (user) {
+          token.onboardingCompleted = user.onboardingCompleted;
+        }
       }
 
       return token;
@@ -80,7 +95,13 @@ export const authOptions: NextAuthOptions = {
         // Fetch fresh user data from database to ensure we have the latest data
         const user = await prisma.user.findUnique({
           where: { id: token.sub! },
-          select: { image: true, name: true, email: true, role: true },
+          select: {
+            image: true,
+            name: true,
+            email: true,
+            role: true,
+            onboardingCompleted: true,
+          },
         });
 
         if (user) {
@@ -88,6 +109,7 @@ export const authOptions: NextAuthOptions = {
           session.user.name = user.name as any;
           session.user.image = user.image as any;
           session.user.role = user.role;
+          session.user.onboardingCompleted = user.onboardingCompleted;
         }
       }
       return session;

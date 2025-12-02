@@ -23,8 +23,7 @@ export function Hero() {
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-6xl font-bold font-sans">
                   Your Shortcut to{' '}
-                  <span className="text-foreground">Internships</span> In
-                  Morocco
+                  <span className="text-foreground">Internships</span> In France
                 </h1>
 
                 {/* Subheadline */}

@@ -193,3 +193,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* UploadThing Styles */
+@layer components {
+  .ut-button {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors;
+    @apply rounded-md px-4 py-2 font-medium;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .ut-allowed-content {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .ut-button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .ut-uploading {
+    @apply text-primary;
+  }
+
+  .ut-label {
+    @apply text-sm font-medium text-foreground;
+  }
+
+  .ut-upload-icon {
+    @apply text-muted-foreground;
+  }
+}

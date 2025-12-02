@@ -1,11 +1,9 @@
 /**
  * Middleware Tests
- * Tests for route protection, role-based redirects, and authentication flow
+ * Tests for route protection, role-based access, and redirects
  */
 
-function expect(condition: boolean, message: string) {
-  if (!condition) throw new Error(`❌ ${message}`);
-}
+import { expect } from './test-utils';
 
 console.log('🧪 Running Middleware Tests...\n');
 
@@ -23,9 +21,13 @@ const protectedRoutes: MatcherPattern[] = [
 ];
 
 function matchesProtectedRoute(pathname: string): boolean {
-  return protectedRoutes.some((pattern) => {
-    const regex = pattern.replace(':path*', '.*');
-    return new RegExp(`^${regex}`).test(pathname);
+  // Next.js matcher with :path* matches the base path and any subpaths
+  // /admin/:path* matches /admin, /admin/, /admin/users, etc.
+  // But NOT /admin-panel or /admins
+  const basePaths = protectedRoutes.map((pattern) => pattern.split('/:')[0]);
+  return basePaths.some((basePath) => {
+    // Match exact path or path with trailing slash
+    return pathname === basePath || pathname.startsWith(basePath + '/');
   });
 }
 

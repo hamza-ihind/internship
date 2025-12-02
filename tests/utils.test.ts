@@ -1,11 +1,9 @@
 /**
  * Utility Functions Tests
- * Tests for common utility functions, helpers, and formatters
+ * Tests for helper functions, validators, and utilities
  */
 
-function expect(condition: boolean, message: string) {
-  if (!condition) throw new Error(`❌ ${message}`);
-}
+import { expect } from './test-utils';
 
 console.log('🧪 Running Utility Functions Tests...\n');
 
@@ -335,7 +333,7 @@ function isValidPhoneNumber(phone: string): boolean {
     expect(isValidUrl(url), `${url} should be valid`);
   });
 
-  const invalidUrls = ['not-a-url', 'htp://wrong', '', 'example.com'];
+  const invalidUrls = ['not-a-url', '://wrong', '', 'example.com', 'http://'];
 
   invalidUrls.forEach((url) => {
     expect(!isValidUrl(url), `${url} should be invalid`);

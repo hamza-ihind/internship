@@ -5,11 +5,26 @@ export default withAuth(function middleware(req) {
   const token = req.nextauth.token;
   const { pathname } = req.nextUrl;
 
-  // Check if user is trying to access admin routes
-  if (pathname.startsWith('/admin')) {
-    // If not admin, redirect to home
-    if (token?.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/', req.url));
+  // Allow access to onboarding page always
+  if (pathname === '/onboarding') {
+    return NextResponse.next();
+  }
+
+  // Check if user hasn't completed onboarding and is trying to access protected routes
+  if (token && !(token as any).onboardingCompleted) {
+    // Allow access to auth pages and onboarding
+    if (
+      !pathname.startsWith('/auth') &&
+      !pathname.startsWith('/api/onboarding')
+    ) {
+      // Redirect to onboarding for protected routes
+      if (
+        pathname.startsWith('/dashboard') ||
+        pathname.startsWith('/admin') ||
+        pathname.startsWith('/settinggs')
+      ) {
+        return NextResponse.redirect(new URL('/onboarding', req.url));
+      }
     }
   }
 

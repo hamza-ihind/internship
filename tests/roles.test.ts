@@ -3,9 +3,7 @@
  * Tests for role validation, permissions, and access control logic
  */
 
-function expect(condition: boolean, message: string) {
-  if (!condition) throw new Error(`❌ ${message}`);
-}
+import { expect } from './test-utils';
 
 console.log('🧪 Running Role-Based Access Control Tests...\n');
 

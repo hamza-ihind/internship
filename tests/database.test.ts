@@ -3,9 +3,7 @@
  * Tests for Prisma schema validation and business logic
  */
 
-function expect(condition: boolean, message: string) {
-  if (!condition) throw new Error(`❌ ${message}`);
-}
+import { expect } from './test-utils';
 
 console.log('🧪 Running Database Schema Tests...\n');
 

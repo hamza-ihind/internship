@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -114,6 +114,7 @@ const groupLabels = {
 export default function Sidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const getNavItems = () => {
@@ -221,7 +222,7 @@ export default function Sidebar() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => signOut()}
+            onClick={() => router.push('/logout')}
             className="w-full"
           >
             <LogOut className="h-4 w-4 mr-2" />

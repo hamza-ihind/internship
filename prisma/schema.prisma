@@ -20,8 +20,9 @@ enum Plan {
 
 enum InternshipStatus {
   DRAFT
-  ACTIVE
+  PUBLISHED
   CLOSED
+  ARCHIVED
 }
 
 enum ApplicationStatus {
@@ -56,6 +57,7 @@ model User {
   applications   Application[]
   payments       Payment[]
   loginAttempts  LoginAttempt[]
+  onboardingCompleted Boolean @default(false) // Track if user completed onboarding
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -169,26 +171,67 @@ model Profile {
 }
 
 model Internship {
+  // Core fields
   id           String            @id @default(cuid())
   title        String
   company      String
-  location     String
+  status       InternshipStatus  @default(DRAFT)
+
+  // Contact Information
+  contactEmail String
+  contactPhone String
+
+  // Location & Mode
+  city         String
+  country      String
+  address      String?           // Full address (optional)
   mode         String
-  description  String
-  requirements String?
-  stipend      Int?
-  tags         String[]
-  openings     Int               @default(1)
-  postedById   String?
-  // postedBy     User?             @relation(fields: [postedById], references: [id], onDelete: SetNull)
-  status       InternshipStatus  @default(ACTIVE)
-  startsAt     DateTime?
-  endsAt       DateTime?
+  remote       Boolean           @default(false)
+
+  // Date & Duration
+  datePosted   DateTime?
+  validThrough DateTime?
+  startDate    DateTime?
+  durationMonths Int?
+  hoursPerWeek Int?              // Working hours per week
+
+  // Contract & compensation
+  internshipType String
+  employmentType String
+  isPaid         Boolean          @default(false)
+  salary         Int?             // Salary amount
+  salaryUnit     String?          // MAD/month, stipend, etc.
+
+  // Academic Targetting
+  requiredLevel String
+  targetSchools String[]
+  allowedFields String[]
+  requiredLanguages String[]
+
+  // Content Description 
+  shortDescription  String
+  fullDescription   String         @db.Text
+  responsibilities  String[]
+  qualifications    String[]
+  benefits          String[]       // Benefits text (mentoring, transport, etc.)
+
+  // Application Process
+  applyMethod      String          @default("platform") // "platform" or "external"
+  externalUrl      String?         // External application URL
+  requiredDocs     String[]        @default(["CV"])     // CV, CL, Portfolio, Other
+  requires_cv      Boolean         @default(true)
+  autoClose        Boolean         @default(false)      // Auto-close when max reached
+  maxApplications  Int?
+  applicationDeadline DateTime?
+
+  // Admin Options
+  visibility       String          @default("public")   // public, hidden, partner_schools
+  tags             String[]        @default([])         // Featured, Top Company, Urgent
+  adminNotes       String?         @db.Text             // Internal comments
+  viewCount        Int             @default(0)          // Track views
+
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
-  
-  // Screening & Requirements
-  screeningQuestions Json?      // Lightweight Q&A forms for applicants
   
   applications Application[]
 }
