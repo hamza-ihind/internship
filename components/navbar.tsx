@@ -35,6 +35,7 @@ export function Navbar() {
   const links = [
     { label: 'Home', href: '/' },
     { label: 'Internships', href: '/internships' },
+    { label: 'Blog', href: '/blog' },
     { label: 'How It Works', href: '#about' },
     { label: 'About Us', href: '#about' },
     { label: 'Pricing', href: '/pricing' },
@@ -256,3 +257,5 @@ export function Navbar() {
     </header>
   );
 }
+
+export default Navbar;

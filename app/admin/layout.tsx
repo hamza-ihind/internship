@@ -95,16 +95,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   //   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      {/* Sidebar for desktop */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-card border-r border-border">
-        <div className="flex items-center gap-3 h-16 px-6 border-b border-border">
+    <div className="flex h-screen bg-background">
+      {/* Sidebar for desktop - fixed position */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-card border-r border-border z-40">
+        <div className="flex items-center gap-3 h-14 px-6 border-b border-border shrink-0">
           <span className="flex space-x-1">
             <span className="w-1 h-6 bg-primary rounded"></span>
             <span className="w-1 h-5 bg-primary/80 rounded"></span>
             <span className="w-1 h-4 bg-primary/60 rounded"></span>
           </span>
-          <span className="text-xl font-bold text-foreground">Admin Panel</span>
+          <span className="text-xl font-bold text-foreground">InternLink</span>
         </div>
 
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
@@ -162,7 +162,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <span className="w-1 h-5 bg-primary/80 rounded"></span>
                   <span className="w-1 h-4 bg-primary/60 rounded"></span>
                 </span>
-                <span className="text-xl font-bold text-foreground">Admin</span>
+                <span className="text-xl font-bold text-foreground">
+                  InternLink
+                </span>
               </div>
               <Button
                 variant="ghost"
@@ -216,10 +218,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       )}
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Main content - offset by sidebar width on desktop */}
+      <div className="flex-1 flex flex-col lg:ml-64">
         {/* Top bar */}
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4 lg:px-8">
+        <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 lg:px-8 shrink-0">
           <Button
             variant="ghost"
             size="sm"
@@ -282,8 +284,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-background">{children}</main>
+        {/* Page content - scrollable area */}
+        <main className="flex-1 bg-background p-4 lg:p-8 overflow-y-auto">
+          {children}
+        </main>
       </div>
     </div>
   );

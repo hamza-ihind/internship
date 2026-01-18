@@ -5,6 +5,11 @@ export default withAuth(function middleware(req) {
   const token = req.nextauth.token;
   const { pathname } = req.nextUrl;
 
+  // Allow uploadthing API routes
+  if (pathname.startsWith('/api/uploadthing')) {
+    return NextResponse.next();
+  }
+
   // Allow access to onboarding page always
   if (pathname === '/onboarding') {
     return NextResponse.next();

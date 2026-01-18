@@ -34,13 +34,14 @@ import {
   Info,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { UploadButton } from '@/lib/uploadthing-client';
+import { UploadButton } from '@uploadthing/react';
+import type { OurFileRouter } from '@/app/api/uploadthing/core';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 const STEPS = [
-  { id: 1, title: 'Profile Photo', icon: Camera },
-  { id: 2, title: 'Personal Info', icon: User },
+  { id: 1, title: 'Personal Info', icon: User },
+  { id: 2, title: 'Profile Photo', icon: Camera },
   { id: 3, title: 'Education', icon: Briefcase },
   { id: 4, title: 'Preferences', icon: Target },
 ];
@@ -51,7 +52,10 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState<Date>();
-  const [profileImage, setProfileImage] = useState<string>('');
+  const [profileImage, setProfileImage] = useState<string>(
+    session?.user?.image || ''
+  );
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [formData, setFormData] = useState({
     // Step 2: Personal Info
@@ -88,20 +92,16 @@ export default function OnboardingPage() {
   };
 
   const handleNext = () => {
-    // Validate Step 1: Profile Image
-    if (currentStep === 1 && !profileImage) {
-      toast.error('Please upload a profile photo before continuing');
-      return;
-    }
-
-    // Validate Step 2: Personal Info
+    // Validate Step 1: Personal Info
     if (
-      currentStep === 2 &&
+      currentStep === 1 &&
       (!formData.phone || !formData.city || !dateOfBirth)
     ) {
       toast.error('Please fill in all required fields');
       return;
     }
+
+    // Step 2 is profile photo - optional, can skip
 
     // Validate Step 3: Education
     if (
@@ -258,76 +258,15 @@ export default function OnboardingPage() {
               </span>
             </CardTitle>
             <CardDescription>
-              {currentStep === 1 && 'Upload a professional profile photo'}
-              {currentStep === 2 && 'Tell us about yourself'}
+              {currentStep === 1 && 'Tell us about yourself'}
+              {currentStep === 2 && 'Upload a professional profile photo'}
               {currentStep === 3 && 'Share your educational background'}
               {currentStep === 4 && 'What are you looking for?'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Step 1: Profile Photo */}
+            {/* Step 1: Personal Info */}
             {currentStep === 1 && (
-              <div className="space-y-6">
-                <div className="flex flex-col items-center justify-center py-8">
-                  <Avatar className="h-32 w-32 mb-6 border-4 border-primary/20">
-                    <AvatarImage src={profileImage} alt="Profile" />
-                    <AvatarFallback className="text-4xl">
-                      {session?.user?.name?.[0] || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <UploadButton
-                    endpoint="profileImage"
-                    onClientUploadComplete={async (res) => {
-                      if (res?.[0]?.url) {
-                        setProfileImage(res[0].url);
-                        // Update session to reflect new image
-                        await update();
-                        toast.success('Profile photo uploaded successfully!');
-                      }
-                    }}
-                    onUploadError={(error: Error) => {
-                      toast.error(`Upload failed: ${error.message}`);
-                    }}
-                  />
-                </div>
-
-                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-4">
-                  <div className="flex gap-3">
-                    <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                    <div className="space-y-2 text-sm">
-                      <p className="font-medium text-blue-900 dark:text-blue-100">
-                        Tips for a great profile photo:
-                      </p>
-                      <ul className="list-disc list-inside space-y-1 text-blue-800 dark:text-blue-200">
-                        <li>
-                          Use a recent photo with your face clearly visible
-                        </li>
-                        <li>
-                          Choose professional attire appropriate for your field
-                        </li>
-                        <li>Ensure good lighting and a clean background</li>
-                        <li>
-                          Smile naturally and maintain eye contact with the
-                          camera
-                        </li>
-                        <li>
-                          Avoid group photos, selfies, or heavily filtered
-                          images
-                        </li>
-                      </ul>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-3">
-                        💡 A professional photo increases your profile views by
-                        up to 14x!
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Personal Info */}
-            {currentStep === 2 && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -405,6 +344,71 @@ export default function OnboardingPage() {
                       }
                       required
                     />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Profile Photo */}
+            {currentStep === 2 && (
+              <div className="space-y-6">
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Avatar className="h-32 w-32 mb-6">
+                    <AvatarImage src={profileImage} alt="Profile" />
+                    <AvatarFallback className="text-4xl">
+                      {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-semibold mb-2">
+                      Upload Your Profile Photo
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Add a professional photo to help companies recognize you
+                    </p>
+                  </div>
+
+                  <UploadButton<OurFileRouter, 'profileImage'>
+                    endpoint="profileImage"
+                    onClientUploadComplete={(res) => {
+                      if (res?.[0]?.url) {
+                        setProfileImage(res[0].url);
+                        toast.success('Profile photo uploaded successfully!');
+                        setUploadingImage(false);
+                      }
+                    }}
+                    onUploadError={(error: Error) => {
+                      toast.error(`Upload failed: ${error.message}`);
+                      setUploadingImage(false);
+                    }}
+                    onUploadBegin={() => {
+                      setUploadingImage(true);
+                      toast.loading('Uploading...');
+                    }}
+                  />
+
+                  {uploadingImage && (
+                    <div className="mt-4 text-sm text-muted-foreground">
+                      Uploading your photo...
+                    </div>
+                  )}
+
+                  <div className="mt-6 p-4 bg-muted/50 rounded-lg max-w-md">
+                    <div className="flex items-start gap-2">
+                      <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <div className="text-xs text-muted-foreground">
+                        <p className="font-medium mb-1">
+                          Tips for a great photo:
+                        </p>
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Use a clear, recent photo</li>
+                          <li>Face the camera directly</li>
+                          <li>Use good lighting</li>
+                          <li>Professional attire recommended</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

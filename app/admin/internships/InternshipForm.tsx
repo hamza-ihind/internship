@@ -24,6 +24,12 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   ArrowLeft,
   Plus,
@@ -34,9 +40,11 @@ import {
   AlertCircle,
   Building2,
   Check,
+  CalendarIcon,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useDebounce } from '@/hooks/use-debounce';
+import { format } from 'date-fns';
 
 type InternshipStatus = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'ARCHIVED';
 
@@ -49,6 +57,18 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
+interface CountryData {
+  country: string;
+  cities: string[];
+}
+
+interface CountryFlag {
+  name: string;
+  flag: string;
+  iso2: string;
+  iso3: string;
+}
+
 export default function InternshipForm({
   internship,
   isNew = false,
@@ -58,10 +78,18 @@ export default function InternshipForm({
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
-    {}
+    {},
   );
   const [newItem, setNewItem] = useState('');
   const [currentArrayField, setCurrentArrayField] = useState<string>('');
+
+  // Country and city data
+  const [countriesData, setCountriesData] = useState<CountryData[]>([]);
+  const [countryFlags, setCountryFlags] = useState<Map<string, string>>(
+    new Map(),
+  );
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -124,6 +152,61 @@ export default function InternshipForm({
 
   // Debounced form data for autosave
   const debouncedFormData = useDebounce(formData, 2000);
+
+  // Fetch countries and flags on mount
+  useEffect(() => {
+    const fetchCountriesAndFlags = async () => {
+      setIsLoadingCountries(true);
+      try {
+        // Fetch countries and cities
+        const countriesResponse = await fetch(
+          'https://countriesnow.space/api/v0.1/countries',
+        );
+        const countriesResult = await countriesResponse.json();
+
+        // Fetch flags
+        const flagsResponse = await fetch(
+          'https://countriesnow.space/api/v0.1/countries/flag/unicode',
+        );
+        const flagsResult = await flagsResponse.json();
+
+        if (countriesResult.data) {
+          setCountriesData(countriesResult.data);
+        }
+
+        if (flagsResult.data) {
+          const flagsMap = new Map<string, string>();
+          flagsResult.data.forEach((item: CountryFlag) => {
+            flagsMap.set(item.name, item.flag);
+          });
+          setCountryFlags(flagsMap);
+        }
+      } catch (error) {
+        console.error('Failed to fetch countries data:', error);
+        toast.error('Failed to load countries data');
+      } finally {
+        setIsLoadingCountries(false);
+      }
+    };
+
+    fetchCountriesAndFlags();
+  }, []);
+
+  // Update available cities when country changes
+  useEffect(() => {
+    if (formData.country) {
+      const countryData = countriesData.find(
+        (c) => c.country.toLowerCase() === formData.country.toLowerCase(),
+      );
+      if (countryData) {
+        setAvailableCities(countryData.cities);
+      } else {
+        setAvailableCities([]);
+      }
+    } else {
+      setAvailableCities([]);
+    }
+  }, [formData.country, countriesData]);
 
   useEffect(() => {
     if (internship && !isNew) {
@@ -297,8 +380,8 @@ export default function InternshipForm({
         publish
           ? 'Internship published successfully!'
           : isNew
-          ? 'Internship created successfully!'
-          : 'Internship updated successfully!'
+            ? 'Internship created successfully!'
+            : 'Internship updated successfully!',
       );
 
       router.push('/admin/internships');
@@ -345,7 +428,7 @@ export default function InternshipForm({
     setFormData((prev) => ({
       ...prev,
       [field]: (prev[field as keyof typeof prev] as string[]).filter(
-        (_, i) => i !== index
+        (_, i) => i !== index,
       ),
     }));
   };
@@ -355,7 +438,7 @@ export default function InternshipForm({
     if (currentValues.includes(value)) {
       updateField(
         field,
-        currentValues.filter((v) => v !== value)
+        currentValues.filter((v) => v !== value),
       );
     } else {
       updateField(field, [...currentValues, value]);
@@ -363,65 +446,32 @@ export default function InternshipForm({
   };
 
   return (
-    <div className="container mx-auto py-6 max-w-5xl">
+    <div className="w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push('/admin/internships')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">
-              {isNew ? 'Create New Internship' : 'Edit Internship'}
-            </h1>
-            {lastSaved && (
-              <p className="text-sm text-muted-foreground mt-1">
-                {isAutoSaving ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Saving...
-                  </span>
-                ) : (
-                  `Last saved: ${lastSaved.toLocaleTimeString()}`
-                )}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handlePreview}
-            disabled={!formData.title || !formData.company}
-          >
-            <Eye className="h-4 w-4 mr-2" />
-            Preview
-          </Button>
-          <Button
-            variant="outline"
-            onClick={(e) => handleSubmit(e, false)}
-            disabled={isSaving}
-          >
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            Save Draft
-          </Button>
-          <Button onClick={(e) => handleSubmit(e, true)} disabled={isSaving}>
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Check className="h-4 w-4 mr-2" />
-            )}
-            Publish
-          </Button>
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push('/admin/internships')}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">
+            {isNew ? 'Create New Internship' : 'Edit Internship'}
+          </h1>
+          {lastSaved && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {isAutoSaving ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Saving...
+                </span>
+              ) : (
+                `Last saved: ${lastSaved.toLocaleTimeString()}`
+              )}
+            </p>
+          )}
         </div>
       </div>
 
@@ -442,7 +492,7 @@ export default function InternshipForm({
         </Alert>
       )}
 
-      <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
+      <form onSubmit={(e) => handleSubmit(e, false)} className="form-grid">
         {/* Section 1: Basic Info */}
         <Card>
           <CardHeader>
@@ -450,8 +500,8 @@ export default function InternshipForm({
             <CardDescription>Core details about the internship</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
+            <div className="form-grid-inner">
+              <div className="form-grid-full">
                 <Label htmlFor="title">
                   Title <span className="text-red-500">*</span>
                 </Label>
@@ -469,7 +519,7 @@ export default function InternshipForm({
                 )}
               </div>
 
-              <div className="col-span-2">
+              <div className="form-grid-full">
                 <Label htmlFor="company">
                   Company <span className="text-red-500">*</span>
                 </Label>
@@ -587,36 +637,55 @@ export default function InternshipForm({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="city">
-                  City <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => updateField('city', e.target.value)}
-                  placeholder="Casablanca"
-                  className={validationErrors.city ? 'border-red-500' : ''}
-                />
-                {validationErrors.city && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {validationErrors.city}
-                  </p>
-                )}
-              </div>
-
+            <div className="form-grid-inner">
               <div>
                 <Label htmlFor="country">
                   Country <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="country"
+                <Select
                   value={formData.country}
-                  onChange={(e) => updateField('country', e.target.value)}
-                  placeholder="Morocco"
-                  className={validationErrors.country ? 'border-red-500' : ''}
-                />
+                  onValueChange={(value) => {
+                    updateField('country', value);
+                    updateField('city', ''); // Reset city when country changes
+                  }}
+                  disabled={isLoadingCountries}
+                >
+                  <SelectTrigger
+                    className={validationErrors.country ? 'border-red-500' : ''}
+                  >
+                    {formData.country ? (
+                      <div className="flex items-center gap-2">
+                        <span>
+                          {countryFlags.get(formData.country) || '🏳️'}
+                        </span>
+                        <span>{formData.country}</span>
+                      </div>
+                    ) : (
+                      <SelectValue
+                        placeholder={
+                          isLoadingCountries
+                            ? 'Loading countries...'
+                            : 'Select a country'
+                        }
+                      />
+                    )}
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px] overflow-y-auto">
+                    {countriesData.map((countryItem) => (
+                      <SelectItem
+                        key={countryItem.country}
+                        value={countryItem.country}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>
+                            {countryFlags.get(countryItem.country) || '🏳️'}
+                          </span>
+                          <span>{countryItem.country}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {validationErrors.country && (
                   <p className="text-sm text-red-500 mt-1">
                     {validationErrors.country}
@@ -624,7 +693,42 @@ export default function InternshipForm({
                 )}
               </div>
 
-              <div className="col-span-2">
+              <div>
+                <Label htmlFor="city">
+                  City <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.city}
+                  onValueChange={(value) => updateField('city', value)}
+                  disabled={!formData.country || availableCities.length === 0}
+                >
+                  <SelectTrigger
+                    className={validationErrors.city ? 'border-red-500' : ''}
+                  >
+                    <SelectValue
+                      placeholder={
+                        !formData.country
+                          ? 'Select a country first'
+                          : 'Select a city'
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px] overflow-y-auto">
+                    {availableCities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {validationErrors.city && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {validationErrors.city}
+                  </p>
+                )}
+              </div>
+
+              <div className="form-grid-full">
                 <Label htmlFor="address">Full Address (Optional)</Label>
                 <Input
                   id="address"
@@ -666,12 +770,38 @@ export default function InternshipForm({
 
               <div>
                 <Label htmlFor="startDate">Start Date</Label>
-                <Input
-                  id="startDate"
-                  type="date"
-                  value={formData.startDate}
-                  onChange={(e) => updateField('startDate', e.target.value)}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.startDate ? (
+                        format(new Date(formData.startDate), 'PPP')
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        formData.startDate
+                          ? new Date(formData.startDate)
+                          : undefined
+                      }
+                      onSelect={(date) =>
+                        updateField(
+                          'startDate',
+                          date ? format(date, 'yyyy-MM-dd') : '',
+                        )
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
@@ -709,17 +839,42 @@ export default function InternshipForm({
                     <span className="text-red-500"> *</span>
                   )}
                 </Label>
-                <Input
-                  id="applicationDeadline"
-                  type="date"
-                  value={formData.applicationDeadline}
-                  onChange={(e) =>
-                    updateField('applicationDeadline', e.target.value)
-                  }
-                  className={
-                    validationErrors.applicationDeadline ? 'border-red-500' : ''
-                  }
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start text-left font-normal ${
+                        validationErrors.applicationDeadline
+                          ? 'border-red-500'
+                          : ''
+                      }`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.applicationDeadline ? (
+                        format(new Date(formData.applicationDeadline), 'PPP')
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        formData.applicationDeadline
+                          ? new Date(formData.applicationDeadline)
+                          : undefined
+                      }
+                      onSelect={(date) =>
+                        updateField(
+                          'applicationDeadline',
+                          date ? format(date, 'yyyy-MM-dd') : '',
+                        )
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 {validationErrors.applicationDeadline && (
                   <p className="text-sm text-red-500 mt-1">
                     {validationErrors.applicationDeadline}
@@ -1117,7 +1272,7 @@ export default function InternshipForm({
             </div>
 
             {formData.isPaid && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="form-grid-inner">
                 <div>
                   <Label htmlFor="salary">Salary Amount</Label>
                   <Input
@@ -1272,14 +1427,14 @@ export default function InternshipForm({
                         {doc}
                       </Label>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </div>
 
             <Separator />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="form-grid-inner">
               <div>
                 <Label htmlFor="maxApplications">
                   Max Applications (Optional)
@@ -1292,7 +1447,7 @@ export default function InternshipForm({
                   onChange={(e) =>
                     updateField(
                       'maxApplications',
-                      parseInt(e.target.value) || 0
+                      parseInt(e.target.value) || 0,
                     )
                   }
                   placeholder="Leave 0 for unlimited"
@@ -1408,7 +1563,7 @@ export default function InternshipForm({
         </Card>
 
         {/* Bottom Actions */}
-        <div className="flex justify-between items-center sticky bottom-0 bg-background border-t pt-4 pb-6">
+        <div className="col-span-full flex justify-between items-center bg-background border-t pt-4 pb-6">
           <Button
             type="button"
             variant="ghost"
@@ -1418,15 +1573,6 @@ export default function InternshipForm({
           </Button>
 
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handlePreview}
-              disabled={!formData.title || !formData.company}
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Preview as Student
-            </Button>
             <Button type="submit" variant="outline" disabled={isSaving}>
               {isSaving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

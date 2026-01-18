@@ -16,10 +16,13 @@ export const ourFileRouter = {
       return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log('Profile image upload complete for userId:', metadata.userId);
-      console.log('File object:', file);
+      console.log('Upload complete for userId:', metadata.userId);
+      console.log('File URL:', file.url);
 
-      return { uploadedBy: metadata.userId };
+      return {
+        uploadedBy: metadata.userId,
+        url: file.url,
+      };
     }),
 } satisfies FileRouter;
 
