@@ -10,13 +10,17 @@ import {
   MapPin,
   Calendar,
   Clock,
-  DollarSign,
+  Banknote,
   Bookmark,
   Filter,
+  Briefcase,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -35,251 +39,145 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { format, formatDistanceToNow } from 'date-fns';
 
-// Dummy data for internships - Moroccan Companies
-const dummyInternships = [
-  {
-    id: 1,
-    title: 'Full Stack Developer',
-    company: 'Capgemini Maroc',
-    location: 'Casablanca',
-    startDate: 'Immediately',
-    duration: '6 Months',
-    stipend: '3000 DH',
-    lastDate: '15-01-2026',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '5 Days Ago',
-    logo: 'https://logo.clearbit.com/capgemini.com',
-    isClosed: false,
-  },
-  {
-    id: 2,
-    title: 'Data Analyst',
-    company: 'Attijariwafa Bank',
-    location: 'Rabat',
-    startDate: '01-02-2026',
-    duration: '4 Months',
-    stipend: '2500 DH',
-    lastDate: '20-01-2026',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '3 Days Ago',
-    logo: 'https://logo.clearbit.com/attijariwafabank.com',
-    isClosed: false,
-  },
-  {
-    id: 3,
-    title: 'UI/UX Designer',
-    company: 'Majorel Morocco',
-    location: 'Work From Home',
-    startDate: '15-01-2026',
-    duration: '3 Months',
-    stipend: '2000 DH',
-    lastDate: '10-01-2026',
-    tags: ['Part Time', 'Pre Placement Opportunity'],
-    posted: '7 Days Ago',
-    logo: 'https://logo.clearbit.com/majorel.com',
-    isClosed: false,
-  },
-  {
-    id: 4,
-    title: 'Marketing & Communication',
-    company: 'Maroc Telecom',
-    location: 'Casablanca',
-    startDate: '01-01-2026',
-    duration: '5 Months',
-    stipend: '3500 DH',
-    lastDate: '25-12-2025',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '12 Days Ago',
-    logo: 'https://logo.clearbit.com/iam.ma',
-    isClosed: true,
-  },
-  {
-    id: 5,
-    title: 'Software Engineer',
-    company: 'SQLI Morocco',
-    location: 'Rabat',
-    startDate: '10-01-2026',
-    duration: '6 Months',
-    stipend: '3200 DH',
-    lastDate: '05-01-2026',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '2 Days Ago',
-    logo: 'https://logo.clearbit.com/sqli.com',
-    isClosed: false,
-  },
-  {
-    id: 6,
-    title: 'Business Intelligence Intern',
-    company: 'OCP Group',
-    location: 'Casablanca',
-    startDate: '01-02-2026',
-    duration: '6 Months',
-    stipend: '4000 DH',
-    lastDate: '15-01-2026',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '4 Days Ago',
-    logo: 'https://logo.clearbit.com/ocpgroup.ma',
-    isClosed: false,
-  },
-  {
-    id: 7,
-    title: 'Mobile Developer',
-    company: 'Société Générale Maroc',
-    location: 'Casablanca',
-    startDate: '20-01-2026',
-    duration: '5 Months',
-    stipend: '3500 DH',
-    lastDate: '10-01-2026',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '6 Days Ago',
-    logo: 'https://logo.clearbit.com/societegenerale.com',
-    isClosed: false,
-  },
-  {
-    id: 8,
-    title: 'Digital Marketing',
-    company: 'Jumia Morocco',
-    location: 'Work From Home',
-    startDate: 'Immediately',
-    duration: '3 Months',
-    stipend: '2200 DH',
-    lastDate: '31-12-2025',
-    tags: ['Part Time', 'Pre Placement Opportunity'],
-    posted: '1 Day Ago',
-    logo: 'https://logo.clearbit.com/jumia.com',
-    isClosed: false,
-  },
-  {
-    id: 9,
-    title: 'DevOps Engineer',
-    company: 'Sopra Steria Morocco',
-    location: 'Rabat',
-    startDate: '15-01-2026',
-    duration: '6 Months',
-    stipend: '3800 DH',
-    lastDate: '08-01-2026',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '3 Days Ago',
-    logo: 'https://logo.clearbit.com/soprasteria.com',
-    isClosed: false,
-  },
-  {
-    id: 10,
-    title: 'Cybersecurity Analyst',
-    company: 'Inwi',
-    location: 'Casablanca',
-    startDate: '01-02-2026',
-    duration: '4 Months',
-    stipend: '3000 DH',
-    lastDate: '20-01-2026',
-    tags: ['Full Time', 'Regular (In-office)', 'Pre Placement Opportunity'],
-    posted: '8 Days Ago',
-    logo: 'https://logo.clearbit.com/inwi.ma',
-    isClosed: false,
-  },
-];
+interface Internship {
+  id: string;
+  title: string;
+  company: string;
+  city: string;
+  country: string;
+  mode: string;
+  remote: boolean;
+  startDate: string | null;
+  durationMonths: number | null;
+  employmentType: string;
+  isPaid: boolean;
+  salary: number | null;
+  salaryUnit: string | null;
+  shortDescription: string;
+  tags: string[];
+  validThrough: string | null;
+  createdAt: string;
+  _count?: {
+    applications: number;
+  };
+}
 
 export default function InternshipsPage() {
   const router = useRouter();
-  const [internships, setInternships] = useState(dummyInternships);
-  const [filteredInternships, setFilteredInternships] =
-    useState(dummyInternships);
+  const [internships, setInternships] = useState<Internship[]>([]);
+  const [filteredInternships, setFilteredInternships] = useState<Internship[]>(
+    [],
+  );
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedProfile, setSelectedProfile] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
-  const [selectedStipend, setSelectedStipend] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedMode, setSelectedMode] = useState('');
   const [selectedType, setSelectedType] = useState('');
-  const [selectedTiming, setSelectedTiming] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('');
-  const [prePlacementOnly, setPrePlacementOnly] = useState(false);
+  const [paidOnly, setPaidOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  // Fetch internships from API
+  useEffect(() => {
+    const fetchInternships = async () => {
+      try {
+        const response = await fetch('/api/internships/public');
+        if (response.ok) {
+          const data = await response.json();
+          setInternships(data.internships || []);
+          setFilteredInternships(data.internships || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch internships:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInternships();
+  }, []);
 
   // Filter logic
   useEffect(() => {
     let filtered = internships;
 
     if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (internship) =>
-          internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          internship.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          internship.location.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (selectedProfile) {
-      filtered = filtered.filter((internship) =>
-        internship.title.toLowerCase().includes(selectedProfile.toLowerCase())
+          internship.title.toLowerCase().includes(lowerSearch) ||
+          internship.company.toLowerCase().includes(lowerSearch) ||
+          internship.city.toLowerCase().includes(lowerSearch) ||
+          internship.shortDescription?.toLowerCase().includes(lowerSearch),
       );
     }
 
     if (selectedCompany) {
       filtered = filtered.filter((internship) =>
-        internship.company.toLowerCase().includes(selectedCompany.toLowerCase())
+        internship.company
+          .toLowerCase()
+          .includes(selectedCompany.toLowerCase()),
       );
     }
 
     if (selectedLocation) {
-      filtered = filtered.filter((internship) =>
-        internship.location
-          .toLowerCase()
-          .includes(selectedLocation.toLowerCase())
+      filtered = filtered.filter(
+        (internship) =>
+          internship.city
+            .toLowerCase()
+            .includes(selectedLocation.toLowerCase()) ||
+          internship.country
+            .toLowerCase()
+            .includes(selectedLocation.toLowerCase()),
       );
+    }
+
+    if (selectedMode) {
+      if (selectedMode === 'remote') {
+        filtered = filtered.filter((internship) => internship.remote);
+      } else if (selectedMode === 'onsite') {
+        filtered = filtered.filter((internship) => !internship.remote);
+      } else if (selectedMode === 'hybrid') {
+        filtered = filtered.filter(
+          (internship) => internship.mode === 'HYBRID',
+        );
+      }
     }
 
     if (selectedType) {
-      filtered = filtered.filter((internship) =>
-        selectedType === 'workFromHome'
-          ? internship.location === 'Work From Home'
-          : internship.location !== 'Work From Home'
+      filtered = filtered.filter(
+        (internship) =>
+          internship.employmentType.toLowerCase() ===
+          selectedType.toLowerCase(),
       );
     }
 
-    if (selectedTiming) {
-      filtered = filtered.filter((internship) =>
-        internship.tags.includes(
-          selectedTiming === 'partTime' ? 'Part Time' : 'Full Time'
-        )
+    if (selectedDuration) {
+      const duration = parseInt(selectedDuration);
+      filtered = filtered.filter(
+        (internship) => internship.durationMonths === duration,
       );
     }
 
-    if (selectedStipend) {
-      filtered = filtered.filter((internship) => {
-        const stipend = internship.stipend;
-        if (selectedStipend === '0k') return stipend === 'Unpaid';
-        if (selectedStipend === '5k')
-          return stipend.includes('6000') || stipend.includes('8000');
-        if (selectedStipend === '10k')
-          return stipend.includes('10000') || stipend.includes('11000');
-        if (selectedStipend === '20k')
-          return stipend.includes('15000') || stipend.includes('12000');
-        if (selectedStipend === '25k+') return false; // No internships above 25k in dummy data
-        return true;
-      });
-    }
-
-    if (prePlacementOnly) {
-      filtered = filtered.filter((internship) =>
-        internship.tags.includes('Pre Placement Opportunity')
-      );
+    if (paidOnly) {
+      filtered = filtered.filter((internship) => internship.isPaid);
     }
 
     setFilteredInternships(filtered);
     setCurrentPage(1);
   }, [
     searchTerm,
-    selectedProfile,
     selectedCompany,
-    selectedStipend,
     selectedLocation,
+    selectedMode,
     selectedType,
-    selectedTiming,
     selectedDuration,
-    prePlacementOnly,
+    paidOnly,
     internships,
   ]);
 
@@ -291,210 +189,241 @@ export default function InternshipsPage() {
 
   const clearAllFilters = () => {
     setSearchTerm('');
-    setSelectedProfile('');
     setSelectedCompany('');
-    setSelectedStipend('');
     setSelectedLocation('');
+    setSelectedMode('');
     setSelectedType('');
-    setSelectedTiming('');
     setSelectedDuration('');
-    setPrePlacementOnly(false);
+    setPaidOnly(false);
   };
+
+  const hasActiveFilters =
+    searchTerm ||
+    selectedCompany ||
+    selectedLocation ||
+    selectedMode ||
+    selectedType ||
+    selectedDuration ||
+    paidOnly;
+
+  const formatSalary = (internship: Internship) => {
+    if (!internship.isPaid) return 'Unpaid';
+    if (!internship.salary) return 'Paid';
+    return `${internship.salary} ${internship.salaryUnit || 'MAD/month'}`;
+  };
+
+  const formatDuration = (months: number | null) => {
+    if (!months) return 'Flexible';
+    return `${months} Month${months > 1 ? 's' : ''}`;
+  };
+
+  const formatStartDate = (date: string | null) => {
+    if (!date) return 'Flexible';
+    return format(new Date(date), 'MMM dd, yyyy');
+  };
+
+  const getTimeAgo = (date: string) => {
+    return formatDistanceToNow(new Date(date), { addSuffix: true });
+  };
+
+  const isExpired = (validThrough: string | null) => {
+    if (!validThrough) return false;
+    return new Date(validThrough) < new Date();
+  };
+
+  // Render filters section (used for both desktop and mobile)
+  const FiltersContent = ({ isMobile = false }: { isMobile?: boolean }) => (
+    <>
+      {/* Company Filter */}
+      <div className="mb-6">
+        <Label className="text-sm font-medium text-foreground mb-2 block">
+          Company
+        </Label>
+        <Input
+          placeholder="Search Company"
+          value={selectedCompany}
+          onChange={(e) => setSelectedCompany(e.target.value)}
+          className="border-border focus:border-primary"
+        />
+      </div>
+
+      {/* Location Filter */}
+      <div className="mb-6">
+        <Label className="text-sm font-medium text-foreground mb-2 block">
+          Location
+        </Label>
+        <Input
+          placeholder="City or Country"
+          value={selectedLocation}
+          onChange={(e) => setSelectedLocation(e.target.value)}
+          className="border-border focus:border-primary"
+        />
+      </div>
+
+      {/* Work Mode Filter */}
+      <div className="mb-6">
+        <Label className="text-sm font-medium text-foreground mb-2 block">
+          Work Mode
+        </Label>
+        <RadioGroup value={selectedMode} onValueChange={setSelectedMode}>
+          <div className="flex items-center space-x-2 mb-2">
+            <RadioGroupItem
+              value="onsite"
+              id={`${isMobile ? 'mobile-' : ''}onsite`}
+            />
+            <Label
+              htmlFor={`${isMobile ? 'mobile-' : ''}onsite`}
+              className="text-sm"
+            >
+              On-site
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2 mb-2">
+            <RadioGroupItem
+              value="remote"
+              id={`${isMobile ? 'mobile-' : ''}remote`}
+            />
+            <Label
+              htmlFor={`${isMobile ? 'mobile-' : ''}remote`}
+              className="text-sm"
+            >
+              Remote
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2 mb-2">
+            <RadioGroupItem
+              value="hybrid"
+              id={`${isMobile ? 'mobile-' : ''}hybrid`}
+            />
+            <Label
+              htmlFor={`${isMobile ? 'mobile-' : ''}hybrid`}
+              className="text-sm"
+            >
+              Hybrid
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {/* Employment Type Filter */}
+      <div className="mb-6">
+        <Label className="text-sm font-medium text-foreground mb-2 block">
+          Employment Type
+        </Label>
+        <RadioGroup value={selectedType} onValueChange={setSelectedType}>
+          <div className="flex items-center space-x-2 mb-2">
+            <RadioGroupItem
+              value="full-time"
+              id={`${isMobile ? 'mobile-' : ''}fulltime`}
+            />
+            <Label
+              htmlFor={`${isMobile ? 'mobile-' : ''}fulltime`}
+              className="text-sm"
+            >
+              Full Time
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2 mb-2">
+            <RadioGroupItem
+              value="part-time"
+              id={`${isMobile ? 'mobile-' : ''}parttime`}
+            />
+            <Label
+              htmlFor={`${isMobile ? 'mobile-' : ''}parttime`}
+              className="text-sm"
+            >
+              Part Time
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {/* Duration Filter */}
+      <div className="mb-6">
+        <Label className="text-sm font-medium text-foreground mb-2 block">
+          Duration
+        </Label>
+        <Select value={selectedDuration} onValueChange={setSelectedDuration}>
+          <SelectTrigger className="border-border">
+            <SelectValue placeholder="Select Duration" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">1 Month</SelectItem>
+            <SelectItem value="2">2 Months</SelectItem>
+            <SelectItem value="3">3 Months</SelectItem>
+            <SelectItem value="4">4 Months</SelectItem>
+            <SelectItem value="5">5 Months</SelectItem>
+            <SelectItem value="6">6 Months</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Paid Only Filter */}
+      <div className="mb-6">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={`${isMobile ? 'mobile-' : ''}paidOnly`}
+            checked={paidOnly}
+            onCheckedChange={(checked) => setPaidOnly(checked as boolean)}
+          />
+          <Label
+            htmlFor={`${isMobile ? 'mobile-' : ''}paidOnly`}
+            className="text-sm"
+          >
+            Paid Internships Only
+          </Label>
+        </div>
+      </div>
+    </>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading internships...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-4 md:py-8">
+      <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Left Sidebar - Filters (Desktop Only) */}
           <div className="hidden lg:block w-80 flex-shrink-0">
-            <Card className="p-6 border-2">
+            <Card className="p-6 border-2 sticky top-24">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-foreground">
                   Filters
                 </h2>
-                <button
-                  onClick={clearAllFilters}
-                  className="text-sm text-primary hover:text-primary/80 transition-colors"
-                >
-                  Clear all
-                </button>
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="text-sm text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Clear all
+                  </button>
+                )}
               </div>
 
-              {/* Profile Filter */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
-                  Profile
-                </Label>
-                <Input
-                  placeholder="Search Profile"
-                  value={selectedProfile}
-                  onChange={(e) => setSelectedProfile(e.target.value)}
-                  className="border-border focus:border-primary"
-                />
-              </div>
-
-              {/* Company Filter */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
-                  Company
-                </Label>
-                <Input
-                  placeholder="Select Company"
-                  value={selectedCompany}
-                  onChange={(e) => setSelectedCompany(e.target.value)}
-                  className="border-border focus:border-primary"
-                />
-              </div>
-
-              {/* Stipend Filter */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
-                  Minimum Monthly Stipend
-                </Label>
-                <RadioGroup
-                  value={selectedStipend}
-                  onValueChange={setSelectedStipend}
-                >
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="0k" id="0k" />
-                    <Label htmlFor="0k" className="text-sm">
-                      0k
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="5k" id="5k" />
-                    <Label htmlFor="5k" className="text-sm">
-                      5k
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="10k" id="10k" />
-                    <Label htmlFor="10k" className="text-sm">
-                      10k
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="20k" id="20k" />
-                    <Label htmlFor="20k" className="text-sm">
-                      20k
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="25k+" id="25k+" />
-                    <Label htmlFor="25k+" className="text-sm">
-                      25k+
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Location Filter */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
-                  Location
-                </Label>
-                <Input
-                  placeholder="Select Location"
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="border-border focus:border-primary"
-                />
-              </div>
-
-              {/* Internship Type Filter */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
-                  Internship Type
-                </Label>
-                <RadioGroup
-                  value={selectedType}
-                  onValueChange={setSelectedType}
-                >
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="regular" id="regular" />
-                    <Label htmlFor="regular" className="text-sm">
-                      Regular (In-office/On-field)
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="workFromHome" id="workFromHome" />
-                    <Label htmlFor="workFromHome" className="text-sm">
-                      Work From Home
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Timing Filter */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
-                  Timing
-                </Label>
-                <RadioGroup
-                  value={selectedTiming}
-                  onValueChange={setSelectedTiming}
-                >
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="partTime" id="partTime" />
-                    <Label htmlFor="partTime" className="text-sm">
-                      Part Time
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="fullTime" id="fullTime" />
-                    <Label htmlFor="fullTime" className="text-sm">
-                      Full Time
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Duration Filter */}
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-2 block">
-                  Internship Duration
-                </Label>
-                <Select
-                  value={selectedDuration}
-                  onValueChange={setSelectedDuration}
-                >
-                  <SelectTrigger className="border-border">
-                    <SelectValue placeholder="Duration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 Month</SelectItem>
-                    <SelectItem value="2">2 Months</SelectItem>
-                    <SelectItem value="3">3 Months</SelectItem>
-                    <SelectItem value="4">4 Months</SelectItem>
-                    <SelectItem value="5">5 Months</SelectItem>
-                    <SelectItem value="6">6 Months</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Pre-Placement Filter */}
-              <div className="mb-6">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="prePlacement"
-                    checked={prePlacementOnly}
-                    onCheckedChange={(checked) =>
-                      setPrePlacementOnly(checked as boolean)
-                    }
-                  />
-                  <Label htmlFor="prePlacement" className="text-sm">
-                    Internship With Pre-Placement Opportunity
-                  </Label>
-                </div>
-              </div>
+              <FiltersContent />
 
               <Button
-                onClick={() => {}}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={clearAllFilters}
+                variant="outline"
+                className="w-full"
+                disabled={!hasActiveFilters}
               >
-                Apply
+                Reset Filters
               </Button>
             </Card>
           </div>
@@ -511,6 +440,11 @@ export default function InternshipsPage() {
                   <Button variant="outline" className="w-full">
                     <Filter className="h-4 w-4 mr-2" />
                     Filters
+                    {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-2">
+                        Active
+                      </Badge>
+                    )}
                   </Button>
                 </SheetTrigger>
                 <SheetContent
@@ -521,189 +455,7 @@ export default function InternshipsPage() {
                     <SheetTitle>Filters</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6">
-                    {/* Profile Filter */}
-                    <div className="mb-6">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">
-                        Profile
-                      </Label>
-                      <Input
-                        placeholder="Search Profile"
-                        value={selectedProfile}
-                        onChange={(e) => setSelectedProfile(e.target.value)}
-                        className="border-border focus:border-primary"
-                      />
-                    </div>
-
-                    {/* Company Filter */}
-                    <div className="mb-6">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">
-                        Company
-                      </Label>
-                      <Input
-                        placeholder="Select Company"
-                        value={selectedCompany}
-                        onChange={(e) => setSelectedCompany(e.target.value)}
-                        className="border-border focus:border-primary"
-                      />
-                    </div>
-
-                    {/* Stipend Filter */}
-                    <div className="mb-6">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">
-                        Minimum Monthly Stipend
-                      </Label>
-                      <RadioGroup
-                        value={selectedStipend}
-                        onValueChange={setSelectedStipend}
-                      >
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem value="0k" id="mobile-0k" />
-                          <Label htmlFor="mobile-0k" className="text-sm">
-                            0k
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem value="5k" id="mobile-5k" />
-                          <Label htmlFor="mobile-5k" className="text-sm">
-                            5k
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem value="10k" id="mobile-10k" />
-                          <Label htmlFor="mobile-10k" className="text-sm">
-                            10k
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem value="20k" id="mobile-20k" />
-                          <Label htmlFor="mobile-20k" className="text-sm">
-                            20k
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem value="25k+" id="mobile-25k+" />
-                          <Label htmlFor="mobile-25k+" className="text-sm">
-                            25k+
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {/* Location Filter */}
-                    <div className="mb-6">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">
-                        Location
-                      </Label>
-                      <Input
-                        placeholder="Select Location"
-                        value={selectedLocation}
-                        onChange={(e) => setSelectedLocation(e.target.value)}
-                        className="border-border focus:border-primary"
-                      />
-                    </div>
-
-                    {/* Internship Type Filter */}
-                    <div className="mb-6">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">
-                        Internship Type
-                      </Label>
-                      <RadioGroup
-                        value={selectedType}
-                        onValueChange={setSelectedType}
-                      >
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem value="regular" id="mobile-regular" />
-                          <Label htmlFor="mobile-regular" className="text-sm">
-                            Regular (In-office/On-field)
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem
-                            value="workFromHome"
-                            id="mobile-workFromHome"
-                          />
-                          <Label
-                            htmlFor="mobile-workFromHome"
-                            className="text-sm"
-                          >
-                            Work From Home
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {/* Timing Filter */}
-                    <div className="mb-6">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">
-                        Timing
-                      </Label>
-                      <RadioGroup
-                        value={selectedTiming}
-                        onValueChange={setSelectedTiming}
-                      >
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem
-                            value="partTime"
-                            id="mobile-partTime"
-                          />
-                          <Label htmlFor="mobile-partTime" className="text-sm">
-                            Part Time
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <RadioGroupItem
-                            value="fullTime"
-                            id="mobile-fullTime"
-                          />
-                          <Label htmlFor="mobile-fullTime" className="text-sm">
-                            Full Time
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {/* Duration Filter */}
-                    <div className="mb-6">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">
-                        Internship Duration
-                      </Label>
-                      <Select
-                        value={selectedDuration}
-                        onValueChange={setSelectedDuration}
-                      >
-                        <SelectTrigger className="border-border">
-                          <SelectValue placeholder="Duration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 Month</SelectItem>
-                          <SelectItem value="2">2 Months</SelectItem>
-                          <SelectItem value="3">3 Months</SelectItem>
-                          <SelectItem value="4">4 Months</SelectItem>
-                          <SelectItem value="5">5 Months</SelectItem>
-                          <SelectItem value="6">6 Months</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Pre-Placement Filter */}
-                    <div className="mb-6">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="mobile-prePlacement"
-                          checked={prePlacementOnly}
-                          onCheckedChange={(checked) =>
-                            setPrePlacementOnly(checked as boolean)
-                          }
-                        />
-                        <Label
-                          htmlFor="mobile-prePlacement"
-                          className="text-sm"
-                        >
-                          Internship With Pre-Placement Opportunity
-                        </Label>
-                      </div>
-                    </div>
-
+                    <FiltersContent isMobile />
                     <div className="flex gap-2">
                       <Button
                         onClick={clearAllFilters}
@@ -725,48 +477,42 @@ export default function InternshipsPage() {
             </div>
 
             {/* Search Bar */}
-            <div className="mb-4 md:mb-6">
+            <div className="mb-6">
               <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
-                  placeholder="Search internships..."
+                  placeholder="Search by title, company, or location..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-4 pr-20 py-2 md:py-3 border-border focus:border-primary text-sm md:text-base"
+                  className="pl-12 pr-12 py-3 h-12 text-base border-2 focus:border-primary"
                 />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-                  {searchTerm && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSearchTerm('')}
-                      className="p-1 h-6 w-6"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <Button className="bg-primary hover:bg-primary/90 h-8 w-8 p-0">
-                    <Search className="h-4 w-4" />
+                {searchTerm && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
                   </Button>
-                </div>
+                )}
               </div>
             </div>
 
             {/* Results Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 md:mb-6">
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Showing {startIndex + 1} to{' '}
-                {Math.min(endIndex, filteredInternships.length)} of{' '}
-                {filteredInternships.length} Internships
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+              <p className="text-sm text-muted-foreground">
+                {filteredInternships.length === 0
+                  ? 'No internships found'
+                  : `Showing ${startIndex + 1} to ${Math.min(endIndex, filteredInternships.length)} of ${filteredInternships.length} internships`}
               </p>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">
-                  Show
-                </span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Show</span>
                 <Select
                   value={itemsPerPage.toString()}
                   onValueChange={(value) => setItemsPerPage(parseInt(value))}
                 >
-                  <SelectTrigger className="w-14 sm:w-16 border-border text-xs sm:text-sm">
+                  <SelectTrigger className="w-16 border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -776,175 +522,204 @@ export default function InternshipsPage() {
                     <SelectItem value="50">50</SelectItem>
                   </SelectContent>
                 </Select>
-                <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">
-                  Internships
-                </span>
               </div>
             </div>
 
             {/* Internship Cards */}
-            <div className="space-y-3 md:space-y-4">
-              {currentInternships.map((internship) => (
-                <Card
-                  key={internship.id}
-                  className="p-4 md:p-6 hover:shadow-lg transition-shadow border-2"
-                >
-                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                    <div className="flex space-x-3 md:space-x-4 w-full sm:w-auto">
-                      <img
-                        src={internship.logo}
-                        alt={internship.company}
-                        className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover flex-shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-base md:text-lg font-semibold text-foreground mb-1 line-clamp-2">
-                          {internship.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <p className="text-xs md:text-sm text-muted-foreground truncate">
+            {currentInternships.length === 0 ? (
+              <Card className="p-12 text-center">
+                <Briefcase className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">
+                  No internships found
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {hasActiveFilters
+                    ? 'Try adjusting your filters to find more opportunities'
+                    : 'Check back later for new internship opportunities'}
+                </p>
+                {hasActiveFilters && (
+                  <Button onClick={clearAllFilters} variant="outline">
+                    Clear all filters
+                  </Button>
+                )}
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {currentInternships.map((internship) => (
+                  <Card
+                    key={internship.id}
+                    className={`p-5 md:p-6 hover:shadow-lg transition-all duration-200 border-2 cursor-pointer ${
+                      isExpired(internship.validThrough) ? 'opacity-60' : ''
+                    }`}
+                    onClick={() => router.push(`/internships/${internship.id}`)}
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between gap-4">
+                      <div className="flex gap-4 flex-1 min-w-0">
+                        {/* Company Avatar */}
+                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0 ring-2 ring-primary/10">
+                          <Building2 className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          {/* Title & Company */}
+                          <h3 className="text-lg font-semibold text-foreground mb-1 line-clamp-1">
+                            {internship.title}
+                          </h3>
+                          <p className="text-muted-foreground mb-3">
                             {internship.company}
                           </p>
-                          {internship.location === 'Work From Home' ? (
-                            <Badge
-                              variant="secondary"
-                              className="bg-blue-100 text-blue-800"
-                            >
-                              {internship.location}
-                            </Badge>
-                          ) : (
-                            <Badge
-                              variant="secondary"
-                              className="bg-gray-100 text-gray-800 flex items-center space-x-1"
-                            >
-                              <MapPin className="h-3 w-3" />
-                              <span>{internship.location}</span>
-                            </Badge>
-                          )}
-                        </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-3 text-xs md:text-sm text-muted-foreground">
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" />
-                            <span className="truncate">
-                              Start: {internship.startDate}
-                            </span>
+                          {/* Meta Information */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 text-sm">
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                              <span className="truncate">
+                                {internship.remote ? 'Remote' : internship.city}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                              <span className="truncate">
+                                {formatStartDate(internship.startDate)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <Clock className="h-4 w-4 text-primary flex-shrink-0" />
+                              <span className="truncate">
+                                {formatDuration(internship.durationMonths)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <Banknote className="h-4 w-4 text-primary flex-shrink-0" />
+                              <span className="truncate">
+                                {formatSalary(internship)}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" />
-                            <span className="truncate">
-                              {internship.duration}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <DollarSign className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" />
-                            <span className="truncate">
-                              {internship.stipend}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" />
-                            <span className="truncate">
-                              Due: {internship.lastDate}
-                            </span>
-                          </div>
-                        </div>
 
-                        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3">
-                          {internship.tags.map((tag, index) => (
+                          {/* Tags */}
+                          <div className="flex flex-wrap gap-2">
                             <Badge
-                              key={index}
                               variant="secondary"
-                              className={`text-xs ${
-                                tag === 'Part Time'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : tag === 'Full Time'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : tag === 'Regular (In-office)'
-                                  ? 'bg-teal-100 text-teal-800'
-                                  : tag === 'Preferably Male'
-                                  ? 'bg-gray-100 text-gray-800'
-                                  : tag === 'Pre Placement Opportunity'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}
+                              className={
+                                internship.employmentType === 'full-time'
+                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                                  : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                              }
                             >
-                              {tag}
+                              {internship.employmentType === 'full-time'
+                                ? 'Full Time'
+                                : 'Part Time'}
                             </Badge>
-                          ))}
+                            {internship.remote && (
+                              <Badge
+                                variant="secondary"
+                                className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                              >
+                                Remote
+                              </Badge>
+                            )}
+                            {internship.isPaid && (
+                              <Badge
+                                variant="secondary"
+                                className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
+                              >
+                                Paid
+                              </Badge>
+                            )}
+                            {internship.tags?.slice(0, 2).map((tag, index) => (
+                              <Badge key={index} variant="outline">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Right Side - Posted Date & Actions */}
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2">
+                        <p className="text-xs text-muted-foreground order-2 sm:order-1">
+                          {getTimeAgo(internship.createdAt)}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 order-1 sm:order-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Save functionality here
+                          }}
+                        >
+                          <Bookmark className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
 
-                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 w-full sm:w-auto">
-                      <p className="text-xs text-muted-foreground order-2 sm:order-1">
-                        {internship.posted}
-                      </p>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-1 order-1 sm:order-2"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end items-center mt-4">
-                    <div className="w-full sm:w-auto">
-                      {internship.isClosed ? (
-                        <Badge className="bg-destructive text-destructive-foreground w-full sm:w-auto justify-center">
-                          Internship Closed
-                        </Badge>
-                      ) : (
-                        <Button
-                          className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto"
-                          onClick={() =>
-                            router.push(`/internships/${internship.id}`)
-                          }
-                        >
-                          View Details →
-                        </Button>
+                    {/* Footer */}
+                    <div className="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                      {internship.validThrough && (
+                        <p className="text-xs text-muted-foreground">
+                          {isExpired(internship.validThrough)
+                            ? 'Application closed'
+                            : `Apply by ${format(new Date(internship.validThrough), 'MMM dd, yyyy')}`}
+                        </p>
                       )}
+                      <div className="ml-auto">
+                        {isExpired(internship.validThrough) ? (
+                          <Badge variant="destructive">Closed</Badge>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="bg-primary hover:bg-primary/90"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/internships/${internship.id}`);
+                            }}
+                          >
+                            View Details →
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-1 sm:gap-2 mt-6 md:mt-8 flex-wrap">
+              <div className="flex justify-center items-center gap-2 mt-8">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="border-border text-xs sm:text-sm"
                 >
-                  <span className="hidden sm:inline">Previous</span>
-                  <span className="sm:hidden">Prev</span>
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-1">Previous</span>
                 </Button>
 
-                <div className="flex gap-1 sm:gap-2">
-                  {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
-                    const pageNum =
-                      Math.max(1, Math.min(totalPages - 2, currentPage - 1)) +
-                      i;
+                <div className="flex gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let page;
+                    if (totalPages <= 5) {
+                      page = i + 1;
+                    } else if (currentPage <= 3) {
+                      page = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      page = totalPages - 4 + i;
+                    } else {
+                      page = currentPage - 2 + i;
+                    }
                     return (
                       <Button
-                        key={pageNum}
+                        key={page}
                         size="sm"
-                        variant={
-                          currentPage === pageNum ? 'default' : 'outline'
-                        }
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`text-xs sm:text-sm ${
-                          currentPage === pageNum
-                            ? 'bg-primary text-primary-foreground'
-                            : 'border-border'
-                        }`}
+                        variant={currentPage === page ? 'default' : 'outline'}
+                        onClick={() => setCurrentPage(page)}
+                        className="w-9 h-9 p-0"
                       >
-                        {pageNum}
+                        {page}
                       </Button>
                     );
                   })}
@@ -957,9 +732,9 @@ export default function InternshipsPage() {
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="border-border text-xs sm:text-sm"
                 >
-                  Next
+                  <span className="hidden sm:inline mr-1">Next</span>
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             )}

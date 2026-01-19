@@ -1,5 +1,9 @@
 {
-  "/auth/login/page": "app/auth/login/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/users/page": "app/admin/users/page.js"
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/internships/public/route": "app/api/internships/public/route.js",
+  "/api/internships/[id]/route": "app/api/internships/[id]/route.js",
+  "/page": "app/page.js",
+  "/internships/page": "app/internships/page.js",
+  "/internships/[id]/page": "app/internships/[id]/page.js",
+  "/admin/internships/page": "app/admin/internships/page.js"
 }
