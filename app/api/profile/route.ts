@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
         email: true,
         image: true,
         role: true,
+        isTwoFactorEnabled: true,
       },
     });
 
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
     console.error('Profile fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch profile' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -252,7 +253,7 @@ export async function PUT(request: NextRequest) {
     console.error('Profile update error:', error);
     return NextResponse.json(
       { error: 'Failed to update profile' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

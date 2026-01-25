@@ -220,7 +220,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       {/* Main content - offset by sidebar width on desktop */}
-      <div className="flex-1 flex flex-col lg:ml-64">
+      <div className="flex-1 flex flex-col lg:ml-32">
         {/* Top bar */}
         <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 lg:px-8 shrink-0">
           <Button

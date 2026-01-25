@@ -1,9 +1,5 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/internships/public/route": "app/api/internships/public/route.js",
-  "/api/internships/[id]/route": "app/api/internships/[id]/route.js",
-  "/page": "app/page.js",
-  "/internships/page": "app/internships/page.js",
-  "/internships/[id]/page": "app/internships/[id]/page.js",
-  "/admin/internships/page": "app/admin/internships/page.js"
+  "/dashboard/settings/page": "app/dashboard/settings/page.js"
 }

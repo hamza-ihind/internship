@@ -29,6 +29,7 @@ import {
   ShoppingCart,
   Camera,
   Store,
+  Shield,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 
@@ -97,6 +98,12 @@ const userNavItems = [
     group: 'settings',
   },
   {
+    name: 'Security',
+    href: '/dashboard/security',
+    icon: Shield,
+    group: 'settings',
+  },
+  {
     name: 'Settings',
     href: '/dashboard/settings',
     icon: Settings,
@@ -132,14 +139,17 @@ export default function Sidebar() {
   const navItems = getNavItems();
 
   // Group navigation items
-  const groupedNavItems = navItems.reduce((groups, item) => {
-    const group = item.group || 'other';
-    if (!groups[group]) {
-      groups[group] = [];
-    }
-    groups[group].push(item);
-    return groups;
-  }, {} as Record<string, typeof navItems>);
+  const groupedNavItems = navItems.reduce(
+    (groups, item) => {
+      const group = item.group || 'other';
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(item);
+      return groups;
+    },
+    {} as Record<string, typeof navItems>,
+  );
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -172,7 +182,7 @@ export default function Sidebar() {
                       'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                       pathname === item.href
                         ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-accent',
                     )}
                   >
                     <item.icon className="h-4 w-4" />

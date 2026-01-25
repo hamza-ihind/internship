@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -21,6 +21,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   CheckCircle2,
@@ -32,12 +39,369 @@ import {
   Camera,
   Calendar as CalendarIcon,
   Info,
+  Upload,
+  Image as ImageIcon,
+  Sparkles,
+  Globe,
+  MapPin,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { UploadButton } from '@uploadthing/react';
 import type { OurFileRouter } from '@/app/api/uploadthing/core';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+
+// Countries and Cities data
+const COUNTRIES_CITIES: Record<string, string[]> = {
+  Morocco: [
+    'Casablanca',
+    'Rabat',
+    'Marrakech',
+    'Fes',
+    'Tangier',
+    'Agadir',
+    'Meknes',
+    'Oujda',
+    'Kenitra',
+    'Tetouan',
+    'Safi',
+    'El Jadida',
+    'Nador',
+    'Beni Mellal',
+    'Khouribga',
+  ],
+  France: [
+    'Paris',
+    'Lyon',
+    'Marseille',
+    'Toulouse',
+    'Nice',
+    'Nantes',
+    'Strasbourg',
+    'Montpellier',
+    'Bordeaux',
+    'Lille',
+  ],
+  'United States': [
+    'New York',
+    'Los Angeles',
+    'Chicago',
+    'Houston',
+    'Phoenix',
+    'Philadelphia',
+    'San Antonio',
+    'San Diego',
+    'Dallas',
+    'San Jose',
+    'Austin',
+    'San Francisco',
+    'Seattle',
+    'Boston',
+    'Miami',
+  ],
+  'United Kingdom': [
+    'London',
+    'Birmingham',
+    'Manchester',
+    'Glasgow',
+    'Liverpool',
+    'Leeds',
+    'Sheffield',
+    'Edinburgh',
+    'Bristol',
+    'Cardiff',
+  ],
+  Germany: [
+    'Berlin',
+    'Hamburg',
+    'Munich',
+    'Cologne',
+    'Frankfurt',
+    'Stuttgart',
+    'Düsseldorf',
+    'Leipzig',
+    'Dortmund',
+    'Essen',
+  ],
+  Spain: [
+    'Madrid',
+    'Barcelona',
+    'Valencia',
+    'Seville',
+    'Zaragoza',
+    'Málaga',
+    'Murcia',
+    'Palma',
+    'Las Palmas',
+    'Bilbao',
+  ],
+  Italy: [
+    'Rome',
+    'Milan',
+    'Naples',
+    'Turin',
+    'Palermo',
+    'Genoa',
+    'Bologna',
+    'Florence',
+    'Bari',
+    'Catania',
+  ],
+  Canada: [
+    'Toronto',
+    'Montreal',
+    'Vancouver',
+    'Calgary',
+    'Edmonton',
+    'Ottawa',
+    'Winnipeg',
+    'Quebec City',
+    'Hamilton',
+    'Halifax',
+  ],
+  Netherlands: [
+    'Amsterdam',
+    'Rotterdam',
+    'The Hague',
+    'Utrecht',
+    'Eindhoven',
+    'Groningen',
+    'Tilburg',
+    'Almere',
+    'Breda',
+    'Nijmegen',
+  ],
+  Belgium: [
+    'Brussels',
+    'Antwerp',
+    'Ghent',
+    'Charleroi',
+    'Liège',
+    'Bruges',
+    'Namur',
+    'Leuven',
+    'Mons',
+    'Mechelen',
+  ],
+  Switzerland: [
+    'Zurich',
+    'Geneva',
+    'Basel',
+    'Bern',
+    'Lausanne',
+    'Winterthur',
+    'Lucerne',
+    'St. Gallen',
+    'Lugano',
+    'Biel',
+  ],
+  'United Arab Emirates': [
+    'Dubai',
+    'Abu Dhabi',
+    'Sharjah',
+    'Ajman',
+    'Ras Al Khaimah',
+    'Fujairah',
+    'Umm Al Quwain',
+    'Al Ain',
+  ],
+  'Saudi Arabia': [
+    'Riyadh',
+    'Jeddah',
+    'Mecca',
+    'Medina',
+    'Dammam',
+    'Khobar',
+    'Tabuk',
+    'Abha',
+  ],
+  Qatar: ['Doha', 'Al Wakrah', 'Al Khor', 'Dukhan', 'Mesaieed'],
+  Egypt: [
+    'Cairo',
+    'Alexandria',
+    'Giza',
+    'Sharm El Sheikh',
+    'Luxor',
+    'Aswan',
+    'Hurghada',
+    'Port Said',
+  ],
+  Tunisia: [
+    'Tunis',
+    'Sfax',
+    'Sousse',
+    'Kairouan',
+    'Bizerte',
+    'Gabès',
+    'Ariana',
+    'Gafsa',
+  ],
+  Algeria: [
+    'Algiers',
+    'Oran',
+    'Constantine',
+    'Annaba',
+    'Blida',
+    'Batna',
+    'Sétif',
+    'Djelfa',
+  ],
+  Turkey: [
+    'Istanbul',
+    'Ankara',
+    'Izmir',
+    'Bursa',
+    'Antalya',
+    'Adana',
+    'Konya',
+    'Gaziantep',
+  ],
+  Portugal: [
+    'Lisbon',
+    'Porto',
+    'Amadora',
+    'Braga',
+    'Coimbra',
+    'Funchal',
+    'Setúbal',
+    'Almada',
+  ],
+  Poland: [
+    'Warsaw',
+    'Krakow',
+    'Lodz',
+    'Wroclaw',
+    'Poznan',
+    'Gdansk',
+    'Szczecin',
+    'Bydgoszcz',
+  ],
+  Sweden: [
+    'Stockholm',
+    'Gothenburg',
+    'Malmö',
+    'Uppsala',
+    'Västerås',
+    'Örebro',
+    'Linköping',
+    'Helsingborg',
+  ],
+  Austria: [
+    'Vienna',
+    'Graz',
+    'Linz',
+    'Salzburg',
+    'Innsbruck',
+    'Klagenfurt',
+    'Villach',
+    'Wels',
+  ],
+  Ireland: [
+    'Dublin',
+    'Cork',
+    'Limerick',
+    'Galway',
+    'Waterford',
+    'Drogheda',
+    'Dundalk',
+    'Sligo',
+  ],
+  Denmark: [
+    'Copenhagen',
+    'Aarhus',
+    'Odense',
+    'Aalborg',
+    'Esbjerg',
+    'Randers',
+    'Kolding',
+    'Horsens',
+  ],
+  Norway: [
+    'Oslo',
+    'Bergen',
+    'Trondheim',
+    'Stavanger',
+    'Drammen',
+    'Fredrikstad',
+    'Kristiansand',
+    'Tromsø',
+  ],
+  Finland: [
+    'Helsinki',
+    'Espoo',
+    'Tampere',
+    'Vantaa',
+    'Oulu',
+    'Turku',
+    'Jyväskylä',
+    'Lahti',
+  ],
+  Singapore: ['Singapore'],
+  Japan: [
+    'Tokyo',
+    'Osaka',
+    'Kyoto',
+    'Yokohama',
+    'Nagoya',
+    'Sapporo',
+    'Fukuoka',
+    'Kobe',
+  ],
+  'South Korea': [
+    'Seoul',
+    'Busan',
+    'Incheon',
+    'Daegu',
+    'Daejeon',
+    'Gwangju',
+    'Suwon',
+    'Ulsan',
+  ],
+  Australia: [
+    'Sydney',
+    'Melbourne',
+    'Brisbane',
+    'Perth',
+    'Adelaide',
+    'Gold Coast',
+    'Canberra',
+    'Newcastle',
+  ],
+  India: [
+    'Mumbai',
+    'Delhi',
+    'Bangalore',
+    'Hyderabad',
+    'Chennai',
+    'Kolkata',
+    'Pune',
+    'Ahmedabad',
+    'Jaipur',
+    'Lucknow',
+  ],
+  Brazil: [
+    'São Paulo',
+    'Rio de Janeiro',
+    'Brasília',
+    'Salvador',
+    'Fortaleza',
+    'Belo Horizonte',
+    'Manaus',
+    'Curitiba',
+  ],
+  Mexico: [
+    'Mexico City',
+    'Guadalajara',
+    'Monterrey',
+    'Puebla',
+    'Tijuana',
+    'León',
+    'Juárez',
+    'Zapopan',
+  ],
+};
+
+const COUNTRIES = Object.keys(COUNTRIES_CITIES).sort();
 
 const STEPS = [
   { id: 1, title: 'Personal Info', icon: User },
@@ -53,7 +417,7 @@ export default function OnboardingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [profileImage, setProfileImage] = useState<string>(
-    session?.user?.image || ''
+    session?.user?.image || '',
   );
   const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -61,7 +425,7 @@ export default function OnboardingPage() {
     // Step 2: Personal Info
     phone: '',
     city: '',
-    country: 'Morocco',
+    country: '',
 
     // Step 3: Education
     university: '',
@@ -95,7 +459,7 @@ export default function OnboardingPage() {
     // Validate Step 1: Personal Info
     if (
       currentStep === 1 &&
-      (!formData.phone || !formData.city || !dateOfBirth)
+      (!formData.phone || !formData.city || !formData.country || !dateOfBirth)
     ) {
       toast.error('Please fill in all required fields');
       return;
@@ -220,8 +584,8 @@ export default function OnboardingPage() {
                     isCurrent
                       ? 'text-primary'
                       : isCompleted
-                      ? 'text-green-500'
-                      : 'text-muted-foreground'
+                        ? 'text-green-500'
+                        : 'text-muted-foreground'
                   }`}
                 >
                   <div
@@ -229,8 +593,8 @@ export default function OnboardingPage() {
                       isCurrent
                         ? 'bg-primary text-primary-foreground scale-110'
                         : isCompleted
-                        ? 'bg-green-500 text-white'
-                        : 'bg-muted'
+                          ? 'bg-green-500 text-white'
+                          : 'bg-muted'
                     }`}
                   >
                     {isCompleted ? (
@@ -294,7 +658,7 @@ export default function OnboardingPage() {
                           variant="outline"
                           className={cn(
                             'w-full justify-start text-left font-normal',
-                            !dateOfBirth && 'text-muted-foreground'
+                            !dateOfBirth && 'text-muted-foreground',
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
@@ -308,7 +672,9 @@ export default function OnboardingPage() {
                           mode="single"
                           selected={dateOfBirth}
                           onSelect={setDateOfBirth}
-                          initialFocus
+                          captionLayout="dropdown"
+                          fromYear={1950}
+                          toYear={new Date().getFullYear()}
                           disabled={(date) =>
                             date > new Date() || date < new Date('1950-01-01')
                           }
@@ -319,31 +685,59 @@ export default function OnboardingPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="city">
-                      City <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="city"
-                      placeholder="Casablanca"
-                      value={formData.city}
-                      onChange={(e) =>
-                        handleInputChange('city', e.target.value)
-                      }
-                      required
-                    />
-                  </div>
-                  <div>
                     <Label htmlFor="country">
+                      <Globe className="inline h-4 w-4 mr-1" />
                       Country <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="country"
+                    <Select
                       value={formData.country}
-                      onChange={(e) =>
-                        handleInputChange('country', e.target.value)
+                      onValueChange={(value) => {
+                        handleInputChange('country', value);
+                        handleInputChange('city', ''); // Reset city when country changes
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map((country) => (
+                          <SelectItem key={country} value={country}>
+                            {country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="city">
+                      <MapPin className="inline h-4 w-4 mr-1" />
+                      City <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={formData.city}
+                      onValueChange={(value) =>
+                        handleInputChange('city', value)
                       }
-                      required
-                    />
+                      disabled={!formData.country}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={
+                            formData.country
+                              ? 'Select a city'
+                              : 'Select a country first'
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {formData.country &&
+                          COUNTRIES_CITIES[formData.country]?.map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -352,63 +746,134 @@ export default function OnboardingPage() {
             {/* Step 2: Profile Photo */}
             {currentStep === 2 && (
               <div className="space-y-6">
-                <div className="flex flex-col items-center justify-center py-8">
-                  <Avatar className="h-32 w-32 mb-6">
-                    <AvatarImage src={profileImage} alt="Profile" />
-                    <AvatarFallback className="text-4xl">
-                      {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+                <div className="flex flex-col lg:flex-row gap-8 items-start">
+                  {/* Left Side - Avatar Preview */}
+                  <div className="flex-1 flex flex-col items-center">
+                    <div className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-full blur-md opacity-50 group-hover:opacity-75 transition-opacity" />
+                      <Avatar className="relative h-40 w-40 border-4 border-background shadow-xl">
+                        <AvatarImage
+                          src={profileImage}
+                          alt="Profile"
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-5xl bg-gradient-to-br from-primary/20 to-purple-500/20">
+                          {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      {profileImage && (
+                        <div className="absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg">
+                          <CheckCircle2 className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-semibold mb-2">
-                      Upload Your Profile Photo
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Add a professional photo to help companies recognize you
-                    </p>
+                    <div className="mt-6 text-center">
+                      <h3 className="text-lg font-semibold">
+                        {session?.user?.name || 'Your Name'}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {session?.user?.email}
+                      </p>
+                    </div>
                   </div>
 
-                  <UploadButton<OurFileRouter, 'profileImage'>
-                    endpoint="profileImage"
-                    onClientUploadComplete={(res) => {
-                      if (res?.[0]?.url) {
-                        setProfileImage(res[0].url);
-                        toast.success('Profile photo uploaded successfully!');
-                        setUploadingImage(false);
-                      }
-                    }}
-                    onUploadError={(error: Error) => {
-                      toast.error(`Upload failed: ${error.message}`);
-                      setUploadingImage(false);
-                    }}
-                    onUploadBegin={() => {
-                      setUploadingImage(true);
-                      toast.loading('Uploading...');
-                    }}
-                  />
+                  {/* Right Side - Upload Section */}
+                  <div className="flex-1 space-y-6">
+                    <div className="p-6 border-2 border-dashed border-primary/30 rounded-xl bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all">
+                      <div className="text-center space-y-4">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
+                          <Upload className="h-8 w-8 text-primary" />
+                        </div>
 
-                  {uploadingImage && (
-                    <div className="mt-4 text-sm text-muted-foreground">
-                      Uploading your photo...
-                    </div>
-                  )}
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">
+                            Upload Your Photo
+                          </h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Drag and drop or click to browse
+                          </p>
+                        </div>
 
-                  <div className="mt-6 p-4 bg-muted/50 rounded-lg max-w-md">
-                    <div className="flex items-start gap-2">
-                      <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <div className="text-xs text-muted-foreground">
-                        <p className="font-medium mb-1">
-                          Tips for a great photo:
-                        </p>
-                        <ul className="list-disc list-inside space-y-1">
-                          <li>Use a clear, recent photo</li>
-                          <li>Face the camera directly</li>
-                          <li>Use good lighting</li>
-                          <li>Professional attire recommended</li>
-                        </ul>
+                        <UploadButton<OurFileRouter, 'profileImage'>
+                          endpoint="profileImage"
+                          onClientUploadComplete={(res) => {
+                            if (res?.[0]?.url) {
+                              setProfileImage(res[0].url);
+                              toast.dismiss();
+                              toast.success(
+                                'Profile photo uploaded successfully!',
+                              );
+                              setUploadingImage(false);
+                            }
+                          }}
+                          onUploadError={(error: Error) => {
+                            toast.dismiss();
+                            toast.error(`Upload failed: ${error.message}`);
+                            setUploadingImage(false);
+                          }}
+                          onUploadBegin={() => {
+                            setUploadingImage(true);
+                            toast.loading('Uploading your photo...');
+                          }}
+                          appearance={{
+                            button:
+                              'bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-2.5 rounded-lg transition-colors ut-uploading:bg-primary/70',
+                            allowedContent:
+                              'text-xs text-muted-foreground mt-2',
+                          }}
+                        />
                       </div>
                     </div>
+
+                    {/* Tips Card */}
+                    <div className="p-4 bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-xl">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-amber-500/20 rounded-lg shrink-0">
+                          <Sparkles className="h-5 w-5 text-amber-500" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-amber-600 dark:text-amber-400 mb-2">
+                            Tips for a great photo
+                          </h4>
+                          <ul className="space-y-1.5 text-sm text-muted-foreground">
+                            <li className="flex items-center gap-2">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                              Use a clear, recent photo
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                              Face the camera directly
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                              Use good, natural lighting
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                              Professional attire recommended
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status */}
+                    {profileImage ? (
+                      <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                          Photo uploaded successfully!
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                        <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                          No photo uploaded yet (optional)
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -488,7 +953,7 @@ export default function OnboardingPage() {
                     onChange={(e) =>
                       handleInputChange(
                         'graduationYear',
-                        parseInt(e.target.value)
+                        parseInt(e.target.value),
                       )
                     }
                   />

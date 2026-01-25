@@ -18,7 +18,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { UploadButton } from '@/lib/uploadthing-client';
+import { UploadButton } from '@uploadthing/react';
+import type { OurFileRouter } from '@/app/api/uploadthing/core';
 import { toast } from 'react-hot-toast';
 import {
   User,
@@ -329,9 +330,9 @@ const page = () => {
                 <div className="flex-1">
                   <Label>Profile Picture</Label>
                   <div className="mt-2">
-                    <UploadButton
+                    <UploadButton<OurFileRouter, 'profileImage'>
                       endpoint="profileImage"
-                      onClientUploadComplete={(res: any) => {
+                      onClientUploadComplete={(res) => {
                         if (res?.[0]?.url) {
                           handleInputChange('photoUrl', res[0].url);
                           toast.success('Profile picture uploaded!');
@@ -467,7 +468,7 @@ const page = () => {
                     onChange={(e) =>
                       handleInputChange(
                         'graduationYear',
-                        parseInt(e.target.value)
+                        parseInt(e.target.value),
                       )
                     }
                   />
@@ -550,9 +551,9 @@ const page = () => {
                   </a>
                 </div>
               )}
-              <UploadButton
+              <UploadButton<OurFileRouter, 'cvUploader'>
                 endpoint="cvUploader"
-                onClientUploadComplete={(res: any) => {
+                onClientUploadComplete={(res) => {
                   if (res?.[0]?.url) {
                     handleInputChange('cvUrl', res[0].url);
                     toast.success('CV uploaded!');

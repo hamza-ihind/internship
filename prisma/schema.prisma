@@ -62,6 +62,7 @@ model User {
   updatedAt      DateTime @updatedAt
 
   isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorSecret       String?                // Encrypted TOTP secret for Google Authenticator
   twoFactorConfirmation TwoFactorConfirmation?
 
   @@map("users")
